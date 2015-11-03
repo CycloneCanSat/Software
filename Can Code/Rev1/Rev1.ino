@@ -1,3 +1,4 @@
+
 //21.2.15 -- Solent Sandfish
 //Full implementation - CanSat firmware
 //To be run on mission hardware as specified in interim reports (PCB Rev.2 )
@@ -9,22 +10,20 @@
  * SensLib--custom library to read sensor data
  * RFMLib--custom library to perform interface with radio modules
  */
-#include <TinyGPS++.h>
+
 #include <SPI.h>
 #include <Servo.h>
 #include <Wire.h>
 #include <sensor_library.h>
 #include <RFM98W_library.h>
-#include <LSM303.h>
+// Include the GPS library, then add an instahnce of the GPS sensor, the GPS should be connected to hardware serial,
+// By recollection, this is Serial1, but ought to be checked - in fact there are two hardware serials which are broken out - thus either one of them could technically be used
+// Alongside the 3.3V and 0V pins which are freely available
+// Initialise the sensor at the specific baud rate of the sensor - I think this is likely to be 15200 - but ought to be checked - as it would entirely fail parsing if this is wrong
+
 /* Constants:
  * LoRa pins
  * The number of bytes implied by each command byte
- * Para release servo pin
- * Strut release servo pin
- * Boolean - parachute released
- * Boolean - parachute armed
- * Linear servo--smallest safe
- * Linear servo--largest safe
  * Motor control pins--motorA and motorB are the two sides of the H-bridge driver.
  * Motors armed?
  * Sensor pins; as implied.
@@ -78,7 +77,6 @@ boolean motors_armed = true;
  * MS5637 read already?
  * Time to read?
  */
-TinyGPSPlus gps;//GPS object
 SensLib sns;//sensor object
 RFMLib radio = RFMLib(nss,dio0,dio5,rfm_rst);//radio object
 uint32_t radio_transmit_timer;
@@ -101,7 +99,6 @@ boolean read_sens = false;
  void setup(){
    pinMode(3,OUTPUT);
    pinMode(4,OUTPUT);
-   Serial1.begin(gps_serial_baud_rate);
   SPI.begin();//Join the SPI bus
   byte my_config[5] = {0x64,0x74,0xFA,0xAC,0xCD};//radio settings
   radio.configure(my_config);//Radio configuration
@@ -135,7 +132,7 @@ void loop(){
    }
   }
   if(radio.rfm_done) finishRFM();
-  while(Serial1.available())gps.encode(Serial1.read());//Read in NMEA GPS data
+  
   Serial.println("--=-=-=-=--");
   Serial.println((millis()-radio_transmit_timer));
   Serial.println(radio.rfm_status);
@@ -249,31 +246,7 @@ void assemblePacket(RFMLib::Packet &pkt){
   //humidity
   pkt.data[6] = (byte)(sns.humidity >> 8);
   pkt.data[7] = sns.humidity & 255;
-  
-  //GPS latitude
-  uint32_t raw_pos = (uint32_t)(gps.location.lat()*1000000);
-  pkt.data[8] = (byte)(raw_pos >> 24);
-  pkt.data[9] = (byte)(raw_pos >> 16);
-  pkt.data[10] = (byte)(raw_pos >> 8);
-  pkt.data[11] = raw_pos & 255;
-  
-  //and longitude
-  raw_pos = (uint32_t)(gps.location.lng()*1000000);
-  pkt.data[12] = (byte)(raw_pos >> 24);
-  pkt.data[13] = (byte)(raw_pos >> 16);
-  pkt.data[14] = (byte)(raw_pos >> 8);
-  pkt.data[15] = raw_pos & 255;
-  //nb lng and lat have fixed sign agreed beforehand.
-  //heading
-  raw_pos = (magnetometer.heading() * 100);
-  pkt.data[16] = (byte)(raw_pos >> 24);
-  pkt.data[17] = (byte)(raw_pos >> 16);
-  pkt.data[18] = (byte)(raw_pos >> 8);
-  pkt.data[19] = raw_pos & 255;
-  
-  pkt.data[20] = gps.hdop.value()/10;
-  //incremental counter
-
+ 
 
   //set length
   pkt.len = 21;

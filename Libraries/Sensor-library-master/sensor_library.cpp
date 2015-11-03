@@ -5,6 +5,7 @@ SensLib::SensLib(){
 }
 void SensLib::initialise(){
   Wire.beginTransmission(ms_addr);
+  //Wire.write(0x1F); // send an initialisation post
   Wire.write(0x1E);
   Wire.endTransmission();
 
