@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Title of the document</title>
+</head>
+<body>
+<pre>
+<font color="#434f54">// This is designed for the Advanced Category of the United Kingdom CanSat</font>
+<font color="#434f54">// Competition 2016, as part of Cyclone, a team from St Paul's School,</font>
+<font color="#434f54">// Barnes, London.</font>
+<font color="#434f54">//</font>
+<font color="#434f54">// For more information about the entry, including the Electronics Design</font>
+<font color="#434f54">// Take a look on the GitHub Page - </font><u><font color="#434f54">http://github.com/cyclonecansat</font></u><font color="#434f54"> or our</font>
+<font color="#434f54">// website at: </font><u><font color="#434f54">http://teamcycl.one</font></u><font color="#434f54"></font>
+<font color="#434f54">//</font>
+<font color="#434f54">// Any questions, contact me at: ashwin.ahuja@gmail.com</font>
+<font color="#95a5a6">/*</font>
+<font color="#95a5a6"> * INCLUDES</font>
+<font color="#95a5a6"> * </font>
+<font color="#95a5a6"> * Sensor Library - Library for the reading and manipulation of the MS5637</font>
+<font color="#95a5a6"> * and HYT271 - the pressure, internal temperature (MS5637) and humidity </font>
+<font color="#95a5a6"> * and external temperature (HYT271) sensors</font>
+<font color="#95a5a6"> * </font>
+<font color="#95a5a6"> * RFM98W Library - Library for the RFM98W Transceiver Board, using the LoRa</font>
+<font color="#95a5a6"> * transmission protocol - including dealing with creation of the Packet and </font>
+<font color="#95a5a6"> * the transmission and receiving of data.</font>
+<font color="#95a5a6"> * </font>
+<font color="#95a5a6"> * Servo Library - Library used for the release of the parachute, currently </font>
+<font color="#95a5a6"> * unused, since it will likely not be used.</font>
+<font color="#95a5a6"> * </font>
+<font color="#95a5a6"> * Wire Library - Library required for all I2C communication.</font>
+<font color="#95a5a6"> * </font>
+<font color="#95a5a6"> * TinyGPS++ Library - Library used for receiving and interpreting data from </font>
+<font color="#95a5a6"> * the GP-2106 module (available from Sparkfun) and used alongside the board</font>
+<font color="#95a5a6"> * produced by Sparkfun - the GP-2106 Evaluation Board</font>
+<font color="#95a5a6"> * </font>
+<font color="#95a5a6"> * SPI - Library used for all SPI communications - currently unused, but could</font>
+<font color="#95a5a6"> * be used for the 9DOF sensor.</font>
+<font color="#95a5a6"> */</font>
+<font color="#5e6d03">#include</font> <font color="#434f54">&lt;</font><font color="#000000">sensor_library</font><font color="#434f54">.</font><font color="#000000">h</font><font color="#434f54">&gt;</font> 
+<font color="#5e6d03">#include</font> <font color="#434f54">&lt;</font><font color="#000000">RFM98W_library</font><font color="#434f54">.</font><font color="#000000">h</font><font color="#434f54">&gt;</font>
+<font color="#5e6d03">#include</font> <font color="#434f54">&lt;</font><b><font color="#d35400">Servo</font></b><font color="#434f54">.</font><font color="#000000">h</font><font color="#434f54">&gt;</font>
+<font color="#5e6d03">#include</font> <font color="#434f54">&lt;</font><font color="#d35400">Wire</font><font color="#434f54">.</font><font color="#000000">h</font><font color="#434f54">&gt;</font>
+<font color="#5e6d03">#include</font> <font color="#434f54">&lt;</font><b><font color="#d35400">TinyGPS</font></b><font color="#434f54">++</font><font color="#434f54">.</font><font color="#000000">h</font><font color="#434f54">&gt;</font>
+<font color="#5e6d03">#include</font> <font color="#434f54">&lt;</font><b><font color="#d35400">SPI</font></b><font color="#434f54">.</font><font color="#000000">h</font><font color="#434f54">&gt;</font>
+<font color="#5e6d03">#include</font> <font color="#434f54">&lt;</font><font color="#000000">LSM9DS1_Registers</font><font color="#434f54">.</font><font color="#000000">h</font><font color="#434f54">&gt;</font>
+<font color="#5e6d03">#include</font> <font color="#434f54">&lt;</font><font color="#000000">LSM9DS1_Types</font><font color="#434f54">.</font><font color="#000000">h</font><font color="#434f54">&gt;</font>
+<font color="#5e6d03">#include</font> <font color="#434f54">&lt;</font><b><font color="#d35400">SparkFunLSM9DS1</font></b><font color="#434f54">.</font><font color="#000000">h</font><font color="#434f54">&gt;</font>
+<font color="#95a5a6">/*</font>
+<font color="#95a5a6"> * DEFINITIONS</font>
+<font color="#95a5a6"> * </font>
+<font color="#95a5a6"> * Pins for the RFM98W - as implied</font>
+<font color="#95a5a6"> * Hardware Serial declarations for the GPS module and the OpenLog</font>
+<font color="#95a5a6"> * Number of bytes implied by each command</font>
+<font color="#95a5a6"> * Parachute Release Servo Pin</font>
+<font color="#95a5a6"> * Boolean - parachute released</font>
+<font color="#95a5a6"> * Boolean - parachute armed</font>
+<font color="#95a5a6"> * Parachute Servo - move from (minimum)</font>
+<font color="#95a5a6"> * Parachute Servo - move to (maximum)</font>
+<font color="#95a5a6"> * Baud Rate for GPS communication</font>
+<font color="#95a5a6"> * Baud Rate for Computer Serial communications</font>
+<font color="#95a5a6"> * Verbosity - 0 for none, 1 for all</font>
+<font color="#95a5a6"> * Boolean - Longitude</font>
+<font color="#95a5a6"> * Boolean - Latitude</font>
+<font color="#95a5a6"> * Time between transmissions (during other times, the system will be receiving data from the RFM98W</font>
+<font color="#95a5a6"> * Various pieces of information about the program</font>
+<font color="#95a5a6"> */</font>
+<font color="#434f54">//LoRa Pins</font>
+<font color="#5e6d03">#define</font> <font color="#000000">nss</font> <font color="#000000">20</font>
+<font color="#5e6d03">#define</font> <font color="#000000">dio0</font> <font color="#000000">7</font>
+<font color="#5e6d03">#define</font> <font color="#000000">dio5</font> <font color="#000000">16</font>
+<font color="#5e6d03">#define</font> <font color="#000000">rfm_rst</font> <font color="#000000">21</font>
+
+<font color="#434f54">// Serial Declarations</font>
+<font color="#5e6d03">#define</font> <font color="#000000">gpsSerial</font> <b><font color="#d35400">Serial1</font></b>
+<font color="#5e6d03">#define</font> <font color="#000000">openlog</font> <b><font color="#d35400">Serial2</font></b>
+
+<font color="#434f54">//radio command lengths</font>
+<font color="#00979c">const</font> <font color="#00979c">byte</font> <font color="#000000">cmd_lengths</font><font color="#000000">[</font><font color="#000000">8</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">{</font><font color="#000000">0</font><font color="#434f54">,</font><font color="#000000">8</font><font color="#434f54">,</font><font color="#000000">2</font><font color="#434f54">,</font><font color="#000000">1</font><font color="#434f54">,</font><font color="#000000">1</font><font color="#434f54">,</font><font color="#000000">2</font><font color="#434f54">,</font><font color="#000000">2</font><font color="#434f54">,</font><font color="#000000">2</font><font color="#000000">}</font><font color="#000000">;</font>
+
+<font color="#434f54">// Servo Info</font>
+<font color="#00979c">const</font> <font color="#00979c">int</font> <font color="#000000">ServoPin</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font> <font color="#434f54">// NOT CORRECT</font>
+<font color="#00979c">bool</font> <font color="#000000">parachuteReleased</font> <font color="#434f54">=</font> <font color="#00979c">false</font><font color="#000000">;</font>
+<font color="#00979c">bool</font> <font color="#000000">parachuteArmed</font> <font color="#434f54">=</font> <font color="#00979c">false</font><font color="#000000">;</font>
+<font color="#00979c">const</font> <font color="#00979c">int</font> <font color="#000000">servoMin</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+<font color="#00979c">const</font> <font color="#00979c">int</font> <font color="#000000">servoMax</font> <font color="#434f54">=</font> <font color="#000000">180</font><font color="#000000">;</font>
+
+<font color="#434f54">// Baud Rate Declarations</font>
+<font color="#5e6d03">#define</font> <font color="#000000">GPS_BaudRate</font> <font color="#000000">4800</font>
+<font color="#5e6d03">#define</font> <font color="#000000">Computer_BaudRate</font> <font color="#000000">115200</font>
+<font color="#5e6d03">#define</font> <font color="#000000">OpenLogBaudRate</font> <font color="#000000">9600</font>
+
+<font color="#434f54">//Verbosity</font>
+<font color="#5e6d03">#define</font> <font color="#000000">verbosity</font> <font color="#000000">1</font>
+
+<font color="#434f54">//LSM9DS1 definitions</font>
+<font color="#5e6d03">#define</font> <font color="#000000">LSM9DS1_M</font> &nbsp;<font color="#000000">0x1E</font> <font color="#434f54">// Would be 0x1C if SDO_M is LOW</font>
+<font color="#5e6d03">#define</font> <font color="#000000">LSM9DS1_AG</font> &nbsp;<font color="#000000">0x6B</font> <font color="#434f54">// Would be 0x6A if SDO_AG is LOW</font>
+<font color="#5e6d03">#define</font> <font color="#000000">PRINT_CALCULATED</font>
+
+<font color="#434f54">//GPS Declarations</font>
+<font color="#00979c">bool</font> <font color="#000000">latitudePositive</font> <font color="#434f54">=</font> <font color="#00979c">false</font><font color="#000000">;</font>
+<font color="#00979c">bool</font> <font color="#000000">longitudePositive</font> <font color="#434f54">=</font> <font color="#00979c">true</font><font color="#000000">;</font>
+
+<font color="#434f54">//Time between transmissions</font>
+<font color="#5e6d03">#define</font> <font color="#000000">timeBetweenTransmissions</font> <font color="#000000">1000</font>
+<font color="#5e6d03">#define</font> <font color="#000000">sensorReadingPeriod</font> <font color="#000000">500</font>
+
+
+<font color="#434f54">//Various other info</font>
+<font color="#5e6d03">#define</font> <font color="#000000">SoftwareVersionNumber</font> <font color="#00979c">"1.2.1"</font>
+<font color="#5e6d03">#define</font> <font color="#000000">Author</font> <font color="#00979c">"Ashwin Ahuja"</font>
+
+<font color="#95a5a6">/*</font>
+<font color="#95a5a6"> * OBJECT DECLARATIONS</font>
+<font color="#95a5a6"> * </font>
+<font color="#95a5a6"> * TinyGPSPlus Object - receives and decodes GPS data</font>
+<font color="#95a5a6"> * SensLib - Communication with MS5637 and HYT271</font>
+<font color="#95a5a6"> * RFMLib - Communication with Hope RFM98W</font>
+<font color="#95a5a6"> * LSM9DS1 - &nbsp;Communication with 9DOF</font>
+<font color="#95a5a6"> * Servo - Parachite release</font>
+<font color="#95a5a6"> * Radio transmission timer.</font>
+<font color="#95a5a6"> * Sensor reading timer</font>
+<font color="#95a5a6"> * Packet received boolean</font>
+<font color="#95a5a6"> * Has MS5637 been read?</font>
+<font color="#95a5a6"> * Is it time to read?</font>
+<font color="#95a5a6"> */</font>
+
+<b><font color="#d35400">TinyGPSPlus</font></b> <font color="#000000">gps</font><font color="#000000">;</font> <font color="#434f54">// GPS</font>
+<font color="#000000">SensLib</font> <font color="#000000">sns</font><font color="#000000">;</font> <font color="#434f54">// Sensor Object</font>
+<font color="#000000">RFMLib</font> <font color="#000000">radio</font> <font color="#434f54">=</font> <font color="#000000">RFMLib</font><font color="#000000">(</font><font color="#000000">nss</font><font color="#434f54">,</font> <font color="#000000">dio0</font><font color="#434f54">,</font> <font color="#000000">dio5</font><font color="#434f54">,</font> <font color="#000000">rfm_rst</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">// Radio Object</font>
+<b><font color="#d35400">LSM9DS1</font></b> <font color="#000000">imu</font><font color="#000000">;</font> <font color="#434f54">// LSM9DS1 Object</font>
+<b><font color="#d35400">Servo</font></b> <font color="#000000">ParaRelease</font><font color="#000000">;</font> <font color="#434f54">// Parachute Release Servo Object</font>
+<font color="#00979c">uint32_t</font> <font color="#000000">radioTransmitTimer</font><font color="#000000">;</font> 
+<font color="#00979c">uint32_t</font> <font color="#000000">sensorReadTimer</font><font color="#000000">;</font>
+<font color="#00979c">boolean</font> <font color="#000000">pkt_rx</font> <font color="#434f54">=</font> <font color="#00979c">false</font><font color="#000000">;</font>
+<font color="#00979c">boolean</font> <font color="#000000">msRead</font> <font color="#434f54">=</font> <font color="#00979c">false</font><font color="#000000">;</font>
+<font color="#00979c">boolean</font> <font color="#000000">readSens</font> <font color="#434f54">=</font> <font color="#00979c">false</font><font color="#000000">;</font>
+
+<font color="#95a5a6">/*</font>
+<font color="#95a5a6"> * Miscellaneous Declarations</font>
+<font color="#95a5a6"> */</font>
+<font color="#00979c">int</font> <font color="#000000">gyx</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">gyy</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">gyz</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">acx</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">acy</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">acz</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">magx</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">magy</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">magz</font><font color="#000000">;</font>
+<font color="#00979c">float</font> <font color="#000000">roll</font><font color="#000000">;</font>
+<font color="#00979c">float</font> <font color="#000000">pitch</font><font color="#000000">;</font>
+<font color="#00979c">float</font> <font color="#000000">heading</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">sampleNumber</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+<font color="#00979c">void</font> <font color="#000000">assemblePacket</font> <font color="#000000">(</font><font color="#000000">RFMLib</font><font color="#434f54">:</font><font color="#434f54">:</font> <font color="#000000">Packet</font> <font color="#434f54">&</font><font color="#000000">pkt</font><font color="#000000">)</font><font color="#000000">;</font>
+<font color="#00979c">void</font> <font color="#000000">decodePacket</font> <font color="#000000">(</font><font color="#000000">RFMLib</font><font color="#434f54">:</font><font color="#434f54">:</font> <font color="#000000">Packet</font> <font color="#000000">pkt</font><font color="#000000">)</font><font color="#000000">;</font>
+
+<font color="#00979c">void</font> <font color="#5e6d03">setup</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#000000">{</font>
+ &nbsp;<font color="#000000">ParaRelease</font><font color="#434f54">.</font><font color="#d35400">attach</font><font color="#000000">(</font><font color="#000000">ServoPin</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">ParaRelease</font><font color="#434f54">.</font><font color="#d35400">write</font><font color="#000000">(</font><font color="#000000">servoMin</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">begin</font><font color="#000000">(</font><font color="#000000">Computer_BaudRate</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">gpsSerial</font><font color="#434f54">.</font><font color="#d35400">begin</font><font color="#000000">(</font><font color="#000000">GPS_BaudRate</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">openlog</font><font color="#434f54">.</font><font color="#d35400">begin</font><font color="#000000">(</font><font color="#000000">OpenLogBaudRate</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<b><font color="#d35400">SPI</font></b><font color="#434f54">.</font><font color="#d35400">begin</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#00979c">byte</font> <font color="#000000">my_config</font><font color="#000000">[</font><font color="#000000">5</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">{</font><font color="#000000">0x64</font><font color="#434f54">,</font><font color="#000000">0x74</font><font color="#434f54">,</font><font color="#000000">0xFA</font><font color="#434f54">,</font><font color="#000000">0xAC</font><font color="#434f54">,</font><font color="#000000">0xCD</font><font color="#000000">}</font><font color="#000000">;</font><font color="#434f54">//radio settings</font>
+ &nbsp;<font color="#000000">radio</font><font color="#434f54">.</font><font color="#000000">configure</font><font color="#000000">(</font><font color="#000000">my_config</font><font color="#000000">)</font><font color="#000000">;</font><font color="#434f54">//Radio configuration</font>
+ &nbsp;<font color="#d35400">Wire</font><font color="#434f54">.</font><font color="#d35400">begin</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font><font color="#434f54">//join the I2C bus</font>
+ &nbsp;<font color="#000000">sns</font><font color="#434f54">.</font><font color="#000000">initialise</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font><font color="#434f54">//initialise the sensors connected over I2C</font>
+ &nbsp;<font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">settings</font><font color="#434f54">.</font><font color="#d35400">device</font><font color="#434f54">.</font><font color="#d35400">commInterface</font> <font color="#434f54">=</font> <font color="#d35400">IMU_MODE_I2C</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">settings</font><font color="#434f54">.</font><font color="#d35400">device</font><font color="#434f54">.</font><font color="#d35400">mAddress</font> <font color="#434f54">=</font> <font color="#000000">LSM9DS1_M</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">settings</font><font color="#434f54">.</font><font color="#d35400">device</font><font color="#434f54">.</font><font color="#d35400">agAddress</font> <font color="#434f54">=</font> <font color="#000000">LSM9DS1_AG</font><font color="#000000">;</font>
+ &nbsp;<font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">begin</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">)</font>
+ &nbsp;<font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<font color="#5e6d03">#if</font> <font color="#000000">verbosity</font> <font color="#434f54">==</font> <font color="#000000">1</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#00979c">"9DOF Initialised"</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<font color="#5e6d03">#endif</font>
+ &nbsp;<font color="#000000">}</font>
+ &nbsp;<font color="#000000">radioTransmitTimer</font> <font color="#434f54">=</font> <font color="#d35400">millis</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#5e6d03">#if</font> <font color="#000000">verbosity</font> <font color="#434f54">!=</font> <font color="#000000">0</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"Cyclone CanSat Firmware Version Number: "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#000000">SoftwareVersionNumber</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">" (Cassini). Verbosity is equal to "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">verbosity</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#5e6d03">#endif</font>
+<font color="#000000">}</font>
+
+<font color="#00979c">void</font> <font color="#5e6d03">loop</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#000000">{</font>
+ &nbsp;<font color="#434f54">// READ FROM IMU</font>
+ &nbsp;<font color="#000000">readIMU</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#5e6d03">if</font><font color="#000000">(</font><font color="#d35400">millis</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#434f54">-</font> <font color="#000000">sensorReadTimer</font> <font color="#434f54">&gt;=</font> <font color="#000000">sensorReadingPeriod</font><font color="#000000">)</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">readSens</font> <font color="#434f54">=</font> <font color="#00979c">true</font><font color="#000000">;</font>
+ &nbsp;<font color="#434f54">// READ FROM SENSORS</font>
+ &nbsp;<font color="#5e6d03">if</font><font color="#000000">(</font><font color="#000000">readSens</font><font color="#000000">)</font>
+ &nbsp;<font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">if</font><font color="#000000">(</font><font color="#000000">msRead</font><font color="#000000">)</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">sns</font><font color="#434f54">.</font><font color="#000000">pollHYT271</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"HUMIDITY: "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">sns</font><font color="#434f54">.</font><font color="#000000">humidity</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">readSens</font> <font color="#434f54">=</font> <font color="#00979c">false</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">sensorReadTimer</font> <font color="#434f54">=</font> <font color="#d35400">millis</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">msRead</font> <font color="#434f54">=</font> <font color="#00979c">false</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">}</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">else</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">sns</font><font color="#434f54">.</font><font color="#000000">pollMS5637</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">msRead</font> <font color="#434f54">=</font> <font color="#00979c">true</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">}</font>
+ &nbsp;<font color="#000000">}</font>
+ &nbsp;<font color="#5e6d03">if</font><font color="#000000">(</font><font color="#000000">radio</font><font color="#434f54">.</font><font color="#000000">rfm_done</font><font color="#000000">)</font> <font color="#000000">finishRFM</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#5e6d03">while</font><font color="#000000">(</font><font color="#000000">gpsSerial</font><font color="#434f54">.</font><font color="#d35400">available</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">)</font><font color="#000000">gps</font><font color="#434f54">.</font><font color="#d35400">encode</font><font color="#000000">(</font><font color="#000000">gpsSerial</font><font color="#434f54">.</font><font color="#d35400">read</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#000000">(</font><font color="#d35400">millis</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#434f54">-</font> <font color="#000000">radioTransmitTimer</font><font color="#000000">)</font> <font color="#434f54">&gt;</font> <font color="#000000">timeBetweenTransmissions</font> <font color="#434f54">&&</font> <font color="#000000">radio</font><font color="#434f54">.</font><font color="#000000">rfm_status</font> <font color="#434f54">!=</font> <font color="#000000">1</font><font color="#000000">)</font>
+ &nbsp;<font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">transmission</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">}</font>
+<font color="#000000">}</font>
+<font color="#00979c">void</font> <font color="#000000">transmission</font><font color="#000000">(</font><font color="#000000">)</font>
+<font color="#000000">{</font>
+ <font color="#5e6d03">#if</font> <font color="#000000">verbosity</font> <font color="#434f54">!=</font> <font color="#000000">0</font>
+ <b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#00979c">"TX"</font><font color="#000000">)</font><font color="#000000">;</font>
+ <font color="#5e6d03">#endif</font>
+ <font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#000000">radio</font><font color="#434f54">.</font><font color="#000000">rfm_status</font> <font color="#434f54">==</font> <font color="#000000">2</font><font color="#000000">)</font>
+ <font color="#000000">{</font>
+ &nbsp;<font color="#000000">RFMLib</font><font color="#434f54">:</font><font color="#434f54">:</font><font color="#000000">Packet</font> <font color="#000000">p</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">radio</font><font color="#434f54">.</font><font color="#000000">endRX</font><font color="#000000">(</font><font color="#000000">p</font><font color="#000000">)</font><font color="#000000">;</font>
+ <font color="#000000">}</font>
+ <font color="#000000">RFMLib</font><font color="#434f54">:</font><font color="#434f54">:</font><font color="#000000">Packet</font> <font color="#000000">p</font><font color="#000000">;</font>
+ <font color="#000000">assemblePacket</font><font color="#000000">(</font><font color="#000000">p</font><font color="#000000">)</font><font color="#000000">;</font>
+ <font color="#000000">radio</font><font color="#434f54">.</font><font color="#000000">beginTX</font><font color="#000000">(</font><font color="#000000">p</font><font color="#000000">)</font><font color="#000000">;</font>
+ <font color="#d35400">attachInterrupt</font><font color="#000000">(</font><font color="#000000">7</font><font color="#434f54">,</font> <font color="#000000">RFFinished</font><font color="#434f54">,</font> <font color="#00979c">RISING</font><font color="#000000">)</font><font color="#000000">;</font>
+ <font color="#000000">radioTransmitTimer</font> <font color="#434f54">=</font> <font color="#d35400">millis</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ <font color="#000000">sensorReadTimer</font> <font color="#434f54">=</font> <font color="#d35400">millis</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font> 
+<font color="#000000">}</font>
+<font color="#00979c">void</font> <font color="#000000">RFFinished</font><font color="#000000">(</font><font color="#000000">)</font>
+<font color="#000000">{</font>
+ &nbsp;<font color="#000000">radio</font><font color="#434f54">.</font><font color="#000000">rfm_done</font> <font color="#434f54">=</font> <font color="#00979c">true</font><font color="#000000">;</font>
+<font color="#000000">}</font>
+<font color="#00979c">void</font> <font color="#000000">finishRFM</font><font color="#000000">(</font><font color="#000000">)</font>
+<font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<font color="#5e6d03">switch</font><font color="#000000">(</font><font color="#000000">radio</font><font color="#434f54">.</font><font color="#000000">rfm_status</font><font color="#000000">)</font><font color="#000000">{</font>
+ &nbsp;<font color="#5e6d03">case</font> <font color="#000000">1</font><font color="#434f54">:</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">#if</font> <font color="#000000">verbosity</font> <font color="#434f54">!=</font> <font color="#000000">0</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#00979c">"Ending transmission."</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">#endif</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">radio</font><font color="#434f54">.</font><font color="#000000">endTX</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">#if</font> <font color="#000000">verbosity</font> <font color="#434f54">!=</font> <font color="#000000">0</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#00979c">"Beginning reception."</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">#endif</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">radio</font><font color="#434f54">.</font><font color="#000000">beginRX</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">radio</font><font color="#434f54">.</font><font color="#000000">rfm_done</font> <font color="#434f54">=</font> <font color="#00979c">false</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#d35400">attachInterrupt</font><font color="#000000">(</font><font color="#000000">7</font><font color="#434f54">,</font><font color="#000000">RFFinished</font><font color="#434f54">,</font><font color="#00979c">RISING</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">break</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">case</font> <font color="#000000">2</font><font color="#434f54">:</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">#if</font> <font color="#000000">verbosity</font> <font color="#434f54">!=</font> <font color="#000000">0</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#00979c">"Ending reception."</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">#endif</font> 
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">RFMLib</font><font color="#434f54">:</font><font color="#434f54">:</font><font color="#000000">Packet</font> <font color="#000000">rx</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">radio</font><font color="#434f54">.</font><font color="#000000">endRX</font><font color="#000000">(</font><font color="#000000">rx</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">decodePacket</font><font color="#000000">(</font><font color="#000000">rx</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">break</font><font color="#000000">;</font>
+ &nbsp;&nbsp;<font color="#000000">}</font>
+<font color="#000000">}</font>
+<font color="#00979c">void</font> <font color="#000000">decodePacket</font><font color="#000000">(</font><font color="#000000">RFMLib</font><font color="#434f54">:</font><font color="#434f54">:</font><font color="#000000">Packet</font> <font color="#000000">pkt</font><font color="#000000">)</font>
+<font color="#000000">{</font>
+ &nbsp;<font color="#00979c">byte</font> <font color="#000000">j</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#000000">verbosity</font> <font color="#434f54">!=</font> <font color="#000000">0</font><font color="#000000">)</font>
+ &nbsp;<font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#00979c">"Decode: "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<font color="#5e6d03">for</font> <font color="#000000">(</font><font color="#00979c">int</font> <font color="#000000">i</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font> <font color="#000000">i</font> <font color="#434f54">&lt;=</font> <font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">len</font><font color="#000000">;</font> <font color="#000000">i</font><font color="#434f54">++</font><font color="#000000">)</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">i</font><font color="#000000">]</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">}</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">}</font>
+ &nbsp;<font color="#5e6d03">while</font> <font color="#000000">(</font><font color="#000000">j</font> <font color="#434f54">&lt;</font> <font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">len</font><font color="#000000">)</font>
+ &nbsp;<font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<font color="#5e6d03">switch</font><font color="#000000">(</font><font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">j</font><font color="#000000">]</font><font color="#000000">)</font><font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">case</font> <font color="#000000">7</font><font color="#434f54">:</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">j</font><font color="#434f54">+</font><font color="#000000">1</font><font color="#000000">]</font> <font color="#434f54">==</font> <font color="#000000">255</font> <font color="#434f54">&&</font> <font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">j</font><font color="#434f54">+</font><font color="#000000">2</font><font color="#000000">]</font> <font color="#434f54">==</font> <font color="#000000">255</font><font color="#000000">)</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#00979c">"RELEASE"</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">ParaRelease</font><font color="#434f54">.</font><font color="#d35400">write</font><font color="#000000">(</font><font color="#000000">servoMax</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">}</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">j</font> <font color="#434f54">=</font> <font color="#000000">j</font> <font color="#434f54">+</font> <font color="#000000">2</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">break</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">}</font>
+ &nbsp;<font color="#000000">}</font>
+<font color="#000000">}</font>
+<font color="#00979c">void</font> <font color="#000000">assemblePacket</font><font color="#000000">(</font><font color="#000000">RFMLib</font><font color="#434f54">:</font><font color="#434f54">:</font><font color="#000000">Packet</font> <font color="#434f54">&</font><font color="#000000">pkt</font><font color="#000000">)</font>
+<font color="#000000">{</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">len</font> <font color="#434f54">=</font> <font color="#000000">41</font><font color="#000000">;</font>
+ &nbsp;<font color="#00979c">int32_t</font> <font color="#000000">pr_calc</font> <font color="#434f54">=</font> <font color="#000000">sns</font><font color="#434f54">.</font><font color="#000000">pressure</font><font color="#000000">;</font>
+ &nbsp;<font color="#00979c">byte</font> <font color="#000000">round_byte</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#000000">(</font><font color="#000000">pr_calc</font> <font color="#434f54">%</font> <font color="#000000">10</font><font color="#000000">)</font><font color="#434f54">&gt;</font><font color="#000000">4</font><font color="#000000">)</font><font color="#434f54">?</font><font color="#000000">1</font><font color="#434f54">:</font><font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pr_calc</font> <font color="#434f54">/=</font> <font color="#000000">10</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pr_calc</font> <font color="#434f54">+=</font> <font color="#000000">(</font><font color="#00979c">int16_t</font><font color="#000000">)</font> <font color="#000000">round_byte</font><font color="#000000">;</font>
+ &nbsp;<font color="#00979c">uint16_t</font> <font color="#000000">small_pressure</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#00979c">uint16_t</font><font color="#000000">)</font> <font color="#000000">pr_calc</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">sampleNumber</font><font color="#434f54">++</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">0</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#00979c">byte</font><font color="#000000">)</font><font color="#000000">(</font><font color="#000000">sampleNumber</font> <font color="#434f54">&gt;&gt;</font> <font color="#000000">8</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">1</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#00979c">byte</font><font color="#000000">)</font><font color="#000000">(</font><font color="#000000">sampleNumber</font> <font color="#434f54">&</font> <font color="#000000">255</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">2</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#00979c">byte</font><font color="#000000">)</font><font color="#000000">(</font><font color="#000000">sns</font><font color="#434f54">.</font><font color="#000000">internal_temperature</font> <font color="#434f54">&gt;&gt;</font> <font color="#000000">8</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">3</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">sns</font><font color="#434f54">.</font><font color="#000000">internal_temperature</font> <font color="#434f54">&</font> <font color="#000000">255</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">4</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#00979c">byte</font><font color="#000000">)</font><font color="#000000">(</font><font color="#000000">small_pressure</font> <font color="#434f54">&gt;&gt;</font> <font color="#000000">8</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">5</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">small_pressure</font> <font color="#434f54">&</font> <font color="#000000">255</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">6</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#00979c">byte</font><font color="#000000">)</font><font color="#000000">(</font><font color="#000000">sns</font><font color="#434f54">.</font><font color="#000000">external_temperature</font> <font color="#434f54">&gt;&gt;</font> <font color="#000000">8</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">7</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">sns</font><font color="#434f54">.</font><font color="#000000">external_temperature</font> <font color="#434f54">&</font> <font color="#000000">255</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">8</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#00979c">byte</font><font color="#000000">)</font><font color="#000000">(</font><font color="#000000">sns</font><font color="#434f54">.</font><font color="#000000">humidity</font> <font color="#434f54">&gt;&gt;</font> <font color="#000000">8</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">9</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">sns</font><font color="#434f54">.</font><font color="#000000">humidity</font> <font color="#434f54">&</font> <font color="#000000">255</font><font color="#000000">;</font>
+ &nbsp;<font color="#00979c">int</font> <font color="#000000">time2</font> <font color="#434f54">=</font> <font color="#000000">gps</font><font color="#434f54">.</font><font color="#d35400">time</font><font color="#434f54">.</font><font color="#d35400">hour</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#434f54">*</font> <font color="#000000">3600</font> <font color="#434f54">+</font> <font color="#000000">gps</font><font color="#434f54">.</font><font color="#d35400">time</font><font color="#434f54">.</font><font color="#d35400">minute</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#434f54">*</font> <font color="#000000">60</font> <font color="#434f54">+</font> <font color="#000000">gps</font><font color="#434f54">.</font><font color="#d35400">time</font><font color="#434f54">.</font><font color="#d35400">second</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">10</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#00979c">byte</font><font color="#000000">)</font><font color="#000000">(</font><font color="#000000">time2</font> <font color="#434f54">&gt;&gt;</font> <font color="#000000">8</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">11</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">time2</font> <font color="#434f54">&</font> <font color="#000000">255</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">12</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#00979c">byte</font><font color="#000000">)</font><font color="#000000">gps</font><font color="#434f54">.</font><font color="#d35400">satellites</font><font color="#434f54">.</font><font color="#d35400">value</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#00979c">uint32_t</font> <font color="#000000">raw_pos</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#00979c">uint32_t</font><font color="#000000">)</font><font color="#000000">(</font><font color="#000000">gps</font><font color="#434f54">.</font><font color="#d35400">location</font><font color="#434f54">.</font><font color="#d35400">lng</font><font color="#000000">(</font><font color="#000000">)</font><font color="#434f54">*</font><font color="#000000">1000000</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">13</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#00979c">byte</font><font color="#000000">)</font><font color="#000000">(</font><font color="#000000">raw_pos</font> <font color="#434f54">&gt;&gt;</font> <font color="#000000">24</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">14</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#00979c">byte</font><font color="#000000">)</font><font color="#000000">(</font><font color="#000000">raw_pos</font> <font color="#434f54">&gt;&gt;</font> <font color="#000000">16</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">15</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#00979c">byte</font><font color="#000000">)</font><font color="#000000">(</font><font color="#000000">raw_pos</font> <font color="#434f54">&gt;&gt;</font> <font color="#000000">8</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">16</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">raw_pos</font> <font color="#434f54">&</font> <font color="#000000">255</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">raw_pos</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#00979c">uint32_t</font><font color="#000000">)</font><font color="#000000">(</font><font color="#000000">gps</font><font color="#434f54">.</font><font color="#d35400">location</font><font color="#434f54">.</font><font color="#d35400">lat</font><font color="#000000">(</font><font color="#000000">)</font><font color="#434f54">*</font><font color="#000000">1000000</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">17</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#00979c">byte</font><font color="#000000">)</font><font color="#000000">(</font><font color="#000000">raw_pos</font> <font color="#434f54">&gt;&gt;</font> <font color="#000000">24</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">18</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#00979c">byte</font><font color="#000000">)</font><font color="#000000">(</font><font color="#000000">raw_pos</font> <font color="#434f54">&gt;&gt;</font> <font color="#000000">16</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">19</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#00979c">byte</font><font color="#000000">)</font><font color="#000000">(</font><font color="#000000">raw_pos</font> <font color="#434f54">&gt;&gt;</font> <font color="#000000">8</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">20</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">raw_pos</font> <font color="#434f54">&</font> <font color="#000000">255</font><font color="#000000">;</font>
+ &nbsp;<font color="#00979c">uint32_t</font> <font color="#000000">raw_alt</font> <font color="#434f54">=</font> <font color="#000000">gps</font><font color="#434f54">.</font><font color="#d35400">altitude</font><font color="#434f54">.</font><font color="#d35400">meters</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">21</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#00979c">byte</font><font color="#000000">)</font><font color="#000000">(</font><font color="#000000">raw_alt</font> <font color="#434f54">&gt;&gt;</font> <font color="#000000">8</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">22</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">raw_alt</font> <font color="#434f54">&</font> <font color="#000000">255</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">23</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">24</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">25</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">26</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">27</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">28</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">29</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">30</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">31</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">32</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">33</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">34</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">35</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">36</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">37</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">38</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">39</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pkt</font><font color="#434f54">.</font><font color="#000000">data</font><font color="#000000">[</font><font color="#000000">40</font><font color="#000000">]</font> <font color="#434f54">=</font> <font color="#000000">0</font><font color="#000000">;</font>
+
+ &nbsp;<font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#000000">verbosity</font> <font color="#434f54">&gt;</font> <font color="#000000">0</font><font color="#000000">)</font>
+ &nbsp;<font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"Sample Number = "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">sampleNumber</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"Internal Temp = "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">sns</font><font color="#434f54">.</font><font color="#000000">internal_temperature</font><font color="#000000">)</font><font color="#000000">;</font> &nbsp;
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"Pressure = "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">sns</font><font color="#434f54">.</font><font color="#000000">pressure</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"External Temp = "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">sns</font><font color="#434f54">.</font><font color="#000000">external_temperature</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"Humidity = "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">sns</font><font color="#434f54">.</font><font color="#000000">humidity</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<font color="#00979c">int</font> <font color="#000000">time3</font> <font color="#434f54">=</font> <font color="#000000">gps</font><font color="#434f54">.</font><font color="#d35400">time</font><font color="#434f54">.</font><font color="#d35400">hour</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#434f54">*</font> <font color="#000000">3600</font> <font color="#434f54">+</font> <font color="#000000">gps</font><font color="#434f54">.</font><font color="#d35400">time</font><font color="#434f54">.</font><font color="#d35400">minute</font><font color="#000000">(</font><font color="#000000">)</font> <font color="#434f54">*</font> <font color="#000000">60</font> <font color="#434f54">+</font> <font color="#000000">gps</font><font color="#434f54">.</font><font color="#d35400">time</font><font color="#434f54">.</font><font color="#d35400">second</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"Second = "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">time3</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"GPS Fix = "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">gps</font><font color="#434f54">.</font><font color="#d35400">satellites</font><font color="#434f54">.</font><font color="#d35400">value</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"Longitude = "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">gps</font><font color="#434f54">.</font><font color="#d35400">location</font><font color="#434f54">.</font><font color="#d35400">lng</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"Latitude = "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">gps</font><font color="#434f54">.</font><font color="#d35400">location</font><font color="#434f54">.</font><font color="#d35400">lat</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"Altitude = "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">gps</font><font color="#434f54">.</font><font color="#d35400">altitude</font><font color="#434f54">.</font><font color="#d35400">meters</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"Acceleration in x = "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">acx</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"Acceleration in y = "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">acy</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"Acceleration in z = "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">acz</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"Rotation in x = "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">gyx</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"Rotation in y = "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">gyy</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"Rotation in z = "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">gyz</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"Heading = "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">heading</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"Pitch = "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">pitch</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#00979c">"Roll = "</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#000000">roll</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">}</font>
+ &nbsp;
+<font color="#000000">}</font>
+<font color="#00979c">void</font> <font color="#000000">readIMU</font><font color="#000000">(</font><font color="#000000">)</font>
+<font color="#000000">{</font>
+ &nbsp;<font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">readGyro</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">readAccel</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">readMag</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">gyx</font> <font color="#434f54">=</font> <font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">calcGyro</font><font color="#000000">(</font><font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">gx</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">gyy</font> <font color="#434f54">=</font> <font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">calcGyro</font><font color="#000000">(</font><font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">gy</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">gyz</font> <font color="#434f54">=</font> <font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">calcGyro</font><font color="#000000">(</font><font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">gz</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">acx</font> <font color="#434f54">=</font> <font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">calcAccel</font><font color="#000000">(</font><font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">ax</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">acy</font> <font color="#434f54">=</font> <font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">calcAccel</font><font color="#000000">(</font><font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">ay</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">acz</font> <font color="#434f54">=</font> <font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">calcAccel</font><font color="#000000">(</font><font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">az</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">magx</font> <font color="#434f54">=</font> <font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">calcMag</font><font color="#000000">(</font><font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">mx</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">magy</font> <font color="#434f54">=</font> <font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">calcMag</font><font color="#000000">(</font><font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">my</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">magz</font> <font color="#434f54">=</font> <font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">calcMag</font><font color="#000000">(</font><font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">mz</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">calculateHeadingAndRoll</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+<font color="#000000">}</font>
+
+<font color="#00979c">void</font> <font color="#000000">calculateHeadingAndRoll</font><font color="#000000">(</font><font color="#000000">)</font>
+<font color="#000000">{</font>
+ &nbsp;<font color="#5e6d03">#define</font> <font color="#000000">DECLINATION</font> <font color="#434f54">-</font><font color="#000000">8.58</font>
+ &nbsp;<font color="#000000">roll</font> <font color="#434f54">=</font> <font color="#d35400">atan2</font><font color="#000000">(</font><font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">ay</font><font color="#434f54">,</font> <font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">az</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pitch</font> <font color="#434f54">=</font> <font color="#d35400">atan2</font><font color="#000000">(</font><font color="#434f54">-</font><font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">ax</font><font color="#434f54">,</font> <font color="#d35400">sqrt</font><font color="#000000">(</font><font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">ay</font> <font color="#434f54">*</font> <font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">ay</font> <font color="#434f54">+</font> <font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">az</font> <font color="#434f54">*</font> <font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">az</font><font color="#000000">)</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;
+ &nbsp;<font color="#000000">heading</font><font color="#000000">;</font>
+ &nbsp;<font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">my</font> <font color="#434f54">==</font> <font color="#000000">0</font><font color="#000000">)</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">heading</font> <font color="#434f54">=</font> <font color="#000000">(</font><font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">mx</font> <font color="#434f54">&lt;</font> <font color="#000000">0</font><font color="#000000">)</font> <font color="#434f54">?</font> <font color="#000000">180.0</font> <font color="#434f54">:</font> <font color="#000000">0</font><font color="#000000">;</font>
+ &nbsp;<font color="#5e6d03">else</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">heading</font> <font color="#434f54">=</font> <font color="#d35400">atan2</font><font color="#000000">(</font><font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">mx</font><font color="#434f54">,</font> <font color="#000000">imu</font><font color="#434f54">.</font><font color="#d35400">my</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;
+ &nbsp;<font color="#000000">heading</font> <font color="#434f54">-=</font> <font color="#000000">DECLINATION</font> <font color="#434f54">*</font> <font color="#00979c">PI</font> <font color="#434f54">/</font> <font color="#000000">180</font><font color="#000000">;</font>
+ &nbsp;
+ &nbsp;<font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#000000">heading</font> <font color="#434f54">&gt;</font> <font color="#00979c">PI</font><font color="#000000">)</font> <font color="#000000">heading</font> <font color="#434f54">-=</font> <font color="#000000">(</font><font color="#000000">2</font> <font color="#434f54">*</font> <font color="#00979c">PI</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#5e6d03">else</font> <font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#000000">heading</font> <font color="#434f54">&lt;</font> <font color="#434f54">-</font><font color="#00979c">PI</font><font color="#000000">)</font> <font color="#000000">heading</font> <font color="#434f54">+=</font> <font color="#000000">(</font><font color="#000000">2</font> <font color="#434f54">*</font> <font color="#00979c">PI</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#5e6d03">else</font> <font color="#5e6d03">if</font> <font color="#000000">(</font><font color="#000000">heading</font> <font color="#434f54">&lt;</font> <font color="#000000">0</font><font color="#000000">)</font> <font color="#000000">heading</font> <font color="#434f54">+=</font> <font color="#000000">2</font> <font color="#434f54">*</font> <font color="#00979c">PI</font><font color="#000000">;</font>
+ &nbsp;
+ &nbsp;<font color="#434f54">// Convert everything from radians to degrees:</font>
+ &nbsp;<font color="#000000">heading</font> <font color="#434f54">*=</font> <font color="#000000">180.0</font> <font color="#434f54">/</font> <font color="#00979c">PI</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">pitch</font> <font color="#434f54">*=</font> <font color="#000000">180.0</font> <font color="#434f54">/</font> <font color="#00979c">PI</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">roll</font> &nbsp;<font color="#434f54">*=</font> <font color="#000000">180.0</font> <font color="#434f54">/</font> <font color="#00979c">PI</font><font color="#000000">;</font>
+<font color="#000000">}</font>
+
+</pre>
+</body>
+</html>

@@ -7,7 +7,6 @@
 // website at: http://teamcycl.one
 //
 // Any questions, contact me at: ashwin.ahuja@gmail.com
-
 /*
  * INCLUDES
  * 
@@ -102,7 +101,7 @@ bool longitudePositive = true;
 
 
 //Various other info
-#define SoftwareVersionNumber "1.0.0"
+#define SoftwareVersionNumber "1.2.1"
 #define Author "Ashwin Ahuja"
 
 /*
@@ -146,7 +145,7 @@ int magz;
 float roll;
 float pitch;
 float heading;
-
+int sampleNumber = 0;
 void assemblePacket (RFMLib:: Packet &pkt);
 void decodePacket (RFMLib:: Packet pkt);
 
@@ -174,7 +173,7 @@ void setup() {
   #if verbosity != 0
   Serial.print("Cyclone CanSat Firmware Version Number: ");
   Serial.print(SoftwareVersionNumber);
-  Serial.print(" (Atlantis). Verbosity is equal to ");
+  Serial.print(" (Cassini). Verbosity is equal to ");
   Serial.println(verbosity);
   #endif
 }
@@ -263,7 +262,7 @@ void decodePacket(RFMLib::Packet pkt)
     Serial.println("Decode: ");
     for (int i = 0; i <= pkt.len; i++)
     {
-      Serial.print(pkt[i]);
+      Serial.print(pkt.data[i]);
     }
     Serial.println();
   }
@@ -283,6 +282,101 @@ void decodePacket(RFMLib::Packet pkt)
 }
 void assemblePacket(RFMLib::Packet &pkt)
 {
+  pkt.len = 41;
+  int32_t pr_calc = sns.pressure;
+  byte round_byte = ((pr_calc % 10)>4)?1:0;
+  pr_calc /= 10;
+  pr_calc += (int16_t) round_byte;
+  uint16_t small_pressure = (uint16_t) pr_calc;
+  sampleNumber++;
+  pkt.data[0] = (byte)(sampleNumber >> 8);
+  pkt.data[1] = (byte)(sampleNumber & 255);
+  pkt.data[2] = (byte)(sns.internal_temperature >> 8);
+  pkt.data[3] = sns.internal_temperature & 255;
+  pkt.data[4] = (byte)(small_pressure >> 8);
+  pkt.data[5] = small_pressure & 255;
+  pkt.data[6] = (byte)(sns.external_temperature >> 8);
+  pkt.data[7] = sns.external_temperature & 255;
+  pkt.data[8] = (byte)(sns.humidity >> 8);
+  pkt.data[9] = sns.humidity & 255;
+  int time2 = gps.time.hour() * 3600 + gps.time.minute() * 60 + gps.time.second();
+  pkt.data[10] = (byte)(time2 >> 8);
+  pkt.data[11] = time2 & 255;
+  pkt.data[12] = (byte)gps.satellites.value();
+  uint32_t raw_pos = (uint32_t)(gps.location.lng()*1000000);
+  pkt.data[13] = (byte)(raw_pos >> 24);
+  pkt.data[14] = (byte)(raw_pos >> 16);
+  pkt.data[15] = (byte)(raw_pos >> 8);
+  pkt.data[16] = raw_pos & 255;
+  raw_pos = (uint32_t)(gps.location.lat()*1000000);
+  pkt.data[17] = (byte)(raw_pos >> 24);
+  pkt.data[18] = (byte)(raw_pos >> 16);
+  pkt.data[19] = (byte)(raw_pos >> 8);
+  pkt.data[20] = raw_pos & 255;
+  uint32_t raw_alt = gps.altitude.meters();
+  pkt.data[21] = (byte)(raw_alt >> 8);
+  pkt.data[22] = raw_alt & 255;
+  pkt.data[23] = 0;
+  pkt.data[24] = 0;
+  pkt.data[25] = 0;
+  pkt.data[26] = 0;
+  pkt.data[27] = 0;
+  pkt.data[28] = 0;
+  pkt.data[29] = 0;
+  pkt.data[30] = 0;
+  pkt.data[31] = 0;
+  pkt.data[32] = 0;
+  pkt.data[33] = 0;
+  pkt.data[34] = 0;
+  pkt.data[35] = 0;
+  pkt.data[36] = 0;
+  pkt.data[37] = 0;
+  pkt.data[38] = 0;
+  pkt.data[39] = 0;
+  pkt.data[40] = 0;
+
+  if (verbosity > 0)
+  {
+    Serial.print("Sample Number = ");
+    Serial.println(sampleNumber);
+    Serial.print("Internal Temp = ");
+    Serial.println(sns.internal_temperature);  
+    Serial.print("Pressure = ");
+    Serial.println(sns.pressure);
+    Serial.print("External Temp = ");
+    Serial.println(sns.external_temperature);
+    Serial.print("Humidity = ");
+    Serial.println(sns.humidity);
+    int time3 = gps.time.hour() * 3600 + gps.time.minute() * 60 + gps.time.second();
+    Serial.print("Second = ");
+    Serial.println(time3);
+    Serial.print("GPS Fix = ");
+    Serial.println(gps.satellites.value());
+    Serial.print("Longitude = ");
+    Serial.println(gps.location.lng());
+    Serial.print("Latitude = ");
+    Serial.println(gps.location.lat());
+    Serial.print("Altitude = ");
+    Serial.println(gps.altitude.meters());
+    Serial.print("Acceleration in x = ");
+    Serial.println(acx);
+    Serial.print("Acceleration in y = ");
+    Serial.println(acy);
+    Serial.print("Acceleration in z = ");
+    Serial.println(acz);
+    Serial.print("Rotation in x = ");
+    Serial.println(gyx);
+    Serial.print("Rotation in y = ");
+    Serial.println(gyy);
+    Serial.print("Rotation in z = ");
+    Serial.println(gyz);
+    Serial.print("Heading = ");
+    Serial.println(heading);
+    Serial.print("Pitch = ");
+    Serial.println(pitch);
+    Serial.print("Roll = ");
+    Serial.println(roll);
+  }
   
 }
 void readIMU()

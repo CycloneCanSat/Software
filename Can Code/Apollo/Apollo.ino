@@ -263,7 +263,7 @@ void decodePacket(RFMLib::Packet pkt)
     Serial.println("Decode: ");
     for (int i = 0; i <= pkt.len; i++)
     {
-      Serial.print(pkt[i]);
+      Serial.print(pkt.data[i]);
     }
     Serial.println();
   }
