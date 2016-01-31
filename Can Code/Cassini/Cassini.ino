@@ -96,12 +96,12 @@ bool latitudePositive = false;
 bool longitudePositive = true;
 
 //Time between transmissions
-#define timeBetweenTransmissions 1000
+#define timeBetweenTransmissions 550
 #define sensorReadingPeriod 500
 
 
 //Various other info
-#define SoftwareVersionNumber "1.2.1"
+#define SoftwareVersionNumber "2.0.1"
 #define Author "Ashwin Ahuja"
 
 /*
@@ -150,6 +150,8 @@ void assemblePacket (RFMLib:: Packet &pkt);
 void decodePacket (RFMLib:: Packet pkt);
 
 void setup() {
+  //while(Serial.available()== 0);
+  delay(1000);
   ParaRelease.attach(ServoPin);
   ParaRelease.write(servoMin);
   Serial.begin(Computer_BaudRate);
@@ -163,12 +165,6 @@ void setup() {
   imu.settings.device.commInterface = IMU_MODE_I2C;
   imu.settings.device.mAddress = LSM9DS1_M;
   imu.settings.device.agAddress = LSM9DS1_AG;
-  if (imu.begin())
-  {
-#if verbosity == 1
-    Serial.println("9DOF Initialised");
-#endif
-  }
   radioTransmitTimer = millis();
 #if verbosity != 0
   Serial.print("Cyclone CanSat Firmware Version Number: ");
@@ -176,6 +172,12 @@ void setup() {
   Serial.print(" (Cassini). Verbosity is equal to ");
   Serial.println(verbosity);
 #endif
+  if (imu.begin())
+  {
+      #if verbosity == 1
+          Serial.println("9DOF Initialised");
+      #endif
+  }
 }
 
 void loop() {
@@ -189,8 +191,6 @@ void loop() {
     if (msRead)
     {
       sns.pollHYT271();
-      Serial.print("HUMIDITY: ");
-      Serial.println(sns.humidity);
       readSens = false;
       sensorReadTimer = millis();
       msRead = false;
@@ -210,9 +210,6 @@ void loop() {
 }
 void transmission()
 {
-#if verbosity != 0
-  Serial.println("TX");
-#endif
   if (radio.rfm_status == 2)
   {
     RFMLib::Packet p;
@@ -233,13 +230,7 @@ void finishRFM()
 {
   switch (radio.rfm_status) {
     case 1:
-#if verbosity != 0
-      Serial.println("Ending transmission.");
-#endif
       radio.endTX();
-#if verbosity != 0
-      Serial.println("Beginning reception.");
-#endif
       radio.beginRX();
       radio.rfm_done = false;
       attachInterrupt(7, RFFinished, RISING);
@@ -432,23 +423,6 @@ void printToOpenLog()
   openLog.println();
   openLog.println();
 }
-void readIMU()
-{
-  imu.readGyro();
-  imu.readAccel();
-  imu.readMag();
-  gyx = imu.calcGyro(imu.gx);
-  gyy = imu.calcGyro(imu.gy);
-  gyz = imu.calcGyro(imu.gz);
-  acx = imu.calcAccel(imu.ax);
-  acy = imu.calcAccel(imu.ay);
-  acz = imu.calcAccel(imu.az);
-  magx = imu.calcMag(imu.mx);
-  magy = imu.calcMag(imu.my);
-  magz = imu.calcMag(imu.mz);
-  calculateHeadingAndRoll();
-}
-
 void calculateHeadingAndRoll()
 {
 #define DECLINATION -8.58
@@ -472,4 +446,22 @@ void calculateHeadingAndRoll()
   pitch *= 180.0 / PI;
   roll  *= 180.0 / PI;
 }
+void readIMU()
+{
+  imu.readGyro();
+  imu.readAccel();
+  imu.readMag();
+  gyx = imu.calcGyro(imu.gx);
+  gyy = imu.calcGyro(imu.gy);
+  gyz = imu.calcGyro(imu.gz);
+  acx = imu.calcAccel(imu.ax);
+  acy = imu.calcAccel(imu.ay);
+  acz = imu.calcAccel(imu.az);
+  magx = imu.calcMag(imu.mx);
+  magy = imu.calcMag(imu.my);
+  magz = imu.calcMag(imu.mz);
+  calculateHeadingAndRoll();
+}
+
+
 
