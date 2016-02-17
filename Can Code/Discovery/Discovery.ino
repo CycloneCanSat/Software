@@ -96,12 +96,12 @@ bool latitudePositive = false;
 bool longitudePositive = true;
 
 //Time between transmissions
-#define timeBetweenTransmissions 550
-#define sensorReadingPeriod 500
+#define timeBetweenTransmissions 250
+#define sensorReadingPeriod 250
 
 
 //Various other info
-#define SoftwareVersionNumber "1.4.0"
+#define SoftwareVersionNumber "1.5.0"
 #define Author "Ashwin Ahuja"
 
 /*
@@ -133,15 +133,15 @@ boolean readSens = false;
 /*
    Miscellaneous Declarations
 */
-int gyx;
-int gyy;
-int gyz;
-int acx;
-int acy;
-int acz;
-int magx;
-int magy;
-int magz;
+float gyx;
+float gyy;
+float gyz;
+float acx;
+float acy;
+float acz;
+float magx;
+float magy;
+float magz;
 float roll;
 float pitch;
 float heading;
@@ -157,15 +157,14 @@ void calculateHeadingAndRoll();
 void readIMU();
 
 void setup() {
-  //while(Serial.available()== 0);
-  delay(1000);
   ParaRelease.attach(ServoPin);
   ParaRelease.write(servoMin);
   Serial.begin(Computer_BaudRate);
   gpsSerial.begin(GPS_BaudRate);
   openLog.begin(OpenLogBaudRate);
+  openLog.println("SAMPLE NUMBER, INTERNAL TEMPERATURE, PRESSURE, EXTERNAL TEMPERATURE, HUMIDITY, TIME(HOURS), TIME(MINUTES), TIME(SECONDS), GPS FIX (SATS), LONGITUDE, LATITUDE, ALTITUDE, ACCELERATION IN X, ACCELERATION IN Y, ACCELERATION IN Z, ROTATION IN X, ROTATION IN Y, ROTATION IN Z, MAGNETIC FIELD STRENGTH IN X, MAGNETIC FIELD STRENGTH IN Y, MAGNETIC FIELD STRENGTH IN Z, HEADING, PITCH, ROLL"); 
   SPI.begin();
-  byte my_config[5] = {0x64, 0x74, 0xFA, 0xAC, 0xCD}; //radio settings
+  byte my_config[6] = {0x44,0x84,0x88,0xAC,0xCD, 0x08};
   radio.configure(my_config);//Radio configuration
   Wire.begin();//join the I2C bus
   sns.initialise();//initialise the sensors connected over I2C
@@ -208,12 +207,12 @@ void loop() {
       msRead = true;
     }
   }
-  if (radio.rfm_done) finishRFM();
-  while (gpsSerial.available())gps.encode(gpsSerial.read());
+  if (radio.rfm_done) 
+    finishRFM();
+  while (gpsSerial.available())
+    gps.encode(gpsSerial.read());
   if ((millis() - radioTransmitTimer) > timeBetweenTransmissions && radio.rfm_status != 1)
-  {
     transmission();
-  }
 }
 void transmission()
 {
@@ -280,54 +279,58 @@ void decodePacket(RFMLib::Packet pkt)
 }
 void printToOpenLog()
 {
-  openLog.print("Sample Number = ");
-  openLog.println(sampleNumber);
-  openLog.print("Internal Temp = ");
-  openLog.println(sns.internal_temperature);
-  openLog.print("Pressure = ");
-  openLog.println(sns.pressure);
-  openLog.print("External Temp = ");
-  openLog.println(sns.external_temperature);
-  openLog.print("Humidity = ");
-  openLog.println(sns.humidity);
+  openLog.print(sampleNumber);
+  openLog.print(",");
+  openLog.print(sns.internal_temperature);
+  openLog.print(",");
+  openLog.print(sns.pressure);
+  openLog.print(",");
+  openLog.print(sns.external_temperature);
+  openLog.print(",");
+  openLog.print(sns.humidity);
   int time3 = gps.time.hour() * 3600 + gps.time.minute() * 60 + gps.time.second();
-  openLog.print("Second = ");
-  openLog.println(time3);
-  openLog.print("GPS Fix = ");
-  openLog.println(gps.satellites.value());
-  openLog.print("Longitude = ");
-  openLog.println(gps.location.lng());
-  openLog.print("Latitude = ");
-  openLog.println(gps.location.lat());
-  openLog.print("Altitude = ");
-  openLog.println(gps.altitude.meters());
-  openLog.print("Acceleration in x = ");
-  openLog.println(acx);
-  openLog.print("Acceleration in y = ");
-  openLog.println(acy);
-  openLog.print("Acceleration in z = ");
-  openLog.println(acz);
-  openLog.print("Rotation in x = ");
-  openLog.println(gyx);
-  openLog.print("Rotation in y = ");
-  openLog.println(gyy);
-  openLog.print("Rotation in z = ");
-  openLog.println(gyz);
-  openLog.print("Heading = ");
-  openLog.println(heading);
-  openLog.print("Pitch = ");
-  openLog.println(pitch);
-  openLog.print("Roll = ");
+  openLog.print(",");
+  openLog.print(gps.time.hour());
+  openLog.print(",");
+  openLog.print(gps.time.minute());
+  openLog.print(",");
+  openLog.print(gps.time.second());
+  openLog.print(",");
+  openLog.print(gps.satellites.value());
+  openLog.print(",");
+  openLog.print(gps.location.lng());
+  openLog.print(",");
+  openLog.print(gps.location.lat());
+  openLog.print(",");
+  openLog.print(gps.altitude.meters());
+  openLog.print(",");
+  openLog.print(acx);
+  openLog.print(",");
+  openLog.print(acy);
+  openLog.print(",");
+  openLog.print(acz);
+  openLog.print(",");
+  openLog.print(gyx);
+  openLog.print(",");
+  openLog.print(gyy);
+  openLog.print(",");
+  openLog.print(gyz);
+  openLog.print(",");
+  openLog.print(magx);
+  openLog.print(",");
+  openLog.print(magy);
+  openLog.print(",");
+  openLog.print(magz);
+  openLog.print(",");
+  openLog.print(heading);
+  openLog.print(",");
+  openLog.print(pitch);
+  openLog.print(",");
   openLog.println(roll);
-  openLog.println();
-  openLog.println();
-  openLog.println();
-  openLog.println();
-  openLog.println();
 }
 void assemblePacket(RFMLib::Packet &pkt)
 {
-  pkt.len = 41;
+  pkt.len = 26;
   int32_t pr_calc = sns.pressure;
   byte round_byte = ((pr_calc % 10) > 4) ? 1 : 0;
   pr_calc /= 10;
@@ -361,24 +364,9 @@ void assemblePacket(RFMLib::Packet &pkt)
   uint32_t raw_alt = gps.altitude.meters();
   pkt.data[21] = (byte)(raw_alt >> 8);
   pkt.data[22] = raw_alt & 255;
-  pkt.data[23] = (byte)(acx >> 8);
-  pkt.data[24] = acx & 255;
-  pkt.data[25] = (byte)(acy >> 8);
-  pkt.data[26] = acy & 255;
-  pkt.data[27] = (byte)(acz >> 8);
-  pkt.data[28] = acz & 255;
-  pkt.data[29] = (byte)(gyx >> 8);
-  pkt.data[30] = gyx & 255;
-  pkt.data[31] = (byte)(gyy >> 8);
-  pkt.data[32] = gyy & 255;
-  pkt.data[33] = (byte)(gyz >> 8);
-  pkt.data[34] = gyz & 255;
-  pkt.data[35] = (byte)((int)heading >> 8);
-  pkt.data[36] = (int)heading & 255;
-  pkt.data[37] = (byte)((int)pitch >> 8);
-  pkt.data[38] = (int)pitch & 255;
-  pkt.data[39] = (byte)((int)roll >> 8);
-  pkt.data[40] = (int)roll & 255;
+  pkt.data[23] = (byte)((int)heading);
+  pkt.data[24] = (byte)((int)pitch);
+  pkt.data[25] = (byte)((int)roll);
 
   if (verbosity > 0)
   {
@@ -436,8 +424,6 @@ void calculateHeadingAndRoll()
 #define DECLINATION -8.58
   roll = atan2(imu.ay, imu.az);
   pitch = atan2(-imu.ax, sqrt(imu.ay * imu.ay + imu.az * imu.az));
-
-  heading;
   if (imu.my == 0)
     heading = (imu.mx < 0) ? 180.0 : 0;
   else
