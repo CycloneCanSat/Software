@@ -1,0 +1,293 @@
+﻿<Window x:Class="Halley__Version_1_.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:m="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF"
+        xmlns:local="clr-namespace:Halley__Version_1_"
+        xmlns:cam="clr-namespace:WebcamControl;assembly=WebcamControl" 
+        xmlns:lvc="clr-namespace:LiveCharts;assembly=LiveCharts"
+        mc:Ignorable="d"
+        Title="Cyclone CanSat - Halley" Height="900" Width="1500">
+    <Viewbox>
+        <Grid Width="1524" Height="900" Background="WhiteSmoke">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="224*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="0*"/>
+            </Grid.ColumnDefinitions>
+            <Rectangle Fill="#FFFFFF" HorizontalAlignment="Left" Height="43" Margin="651,256.308,0,0" Stroke="Black" VerticalAlignment="Top" Width="395" Grid.Row="1"/>
+            <Rectangle Fill="#FFFFFF" HorizontalAlignment="Left" Height="43" Margin="651,214.308,0,0" Stroke="Black" VerticalAlignment="Top" Width="395" Grid.Row="1"/>
+            <Rectangle Fill="#FFFFFF" HorizontalAlignment="Left" Height="43" Margin="651,172.308,0,0" Stroke="Black" VerticalAlignment="Top" Width="395" Grid.Row="1"/>
+            <Rectangle Fill="#FFFFFF" HorizontalAlignment="Left" Height="43" Margin="651,130.308,0,0" Stroke="Black" VerticalAlignment="Top" Width="395" Grid.Row="1"/>
+            <Rectangle Fill="#FFFFFF" HorizontalAlignment="Left" Height="43" Margin="651,89.308,0,0" Stroke="Black" VerticalAlignment="Top" Width="395" Grid.Row="1"/>
+            <Rectangle Fill="#FFFFFF" HorizontalAlignment="Left" Height="43" Margin="651,47.308,0,0" Stroke="Black" VerticalAlignment="Top" Width="395" Grid.Row="1"/>
+            <Rectangle Fill="#FFFFFF" HorizontalAlignment="Left" Height="46" Margin="651,3.308,0,0" Stroke="Black" VerticalAlignment="Top" Width="395" Grid.Row="1"/>
+            <Grid Margin="1096,77.308,10,781" Grid.Row="1">
+                <Rectangle Fill="#FFFFFF" HorizontalAlignment="Left" Height="38" Stroke="Black" VerticalAlignment="Top" Width="418" RenderTransformOrigin="0.5,0.5">
+                    <Rectangle.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleY="-1"/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Label x:Name="label2_Copy8" Content="Longitude / °N" HorizontalAlignment="Left" Margin="2,6,0,0" VerticalAlignment="Top" Height="26" Width="101"/>
+                <TextBox x:Name="longBox" HorizontalAlignment="Left" Height="26" Margin="296,6,0,0" TextWrapping="Wrap" Text="0.000000" VerticalAlignment="Top" Width="108" FontSize="13.333" IsReadOnly="True"/>
+            </Grid>
+            <Grid Margin="1096,3.308,10,855" Grid.Row="1">
+                <Rectangle Fill="#FFFFFF" HorizontalAlignment="Left" Height="38" Stroke="Black" VerticalAlignment="Top" Width="418" RenderTransformOrigin="0.5,0.5">
+                    <Rectangle.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleY="-1"/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Label x:Name="label2_Copy6" Content="Number of Satellites (GPS Fix)" HorizontalAlignment="Left" Margin="2,6,0,0" VerticalAlignment="Top" Height="26" Width="167"/>
+
+                <TextBox x:Name="satsBox" HorizontalAlignment="Left" Height="26" Margin="296,6,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="108" FontSize="13.333" IsReadOnly="True"/>
+            </Grid>
+            <GridSplitter x:Name="gridSplitter" HorizontalAlignment="Left" Height="900" Margin="614,0,0,0" VerticalAlignment="Top" Width="12" RenderTransformOrigin="2.339,0.496" Grid.RowSpan="2"/>
+            <m:Map x:Name="map" CredentialsProvider="Au-zGYgVQzzAWdnCldQiy8--n5H8r95_FWHm4byx7I2ns-Bundb0xWiTgCDEI_xS" Margin="305,390.308,910,186" Mode="AerialWithLabels" Grid.Row="1" />
+            <GridSplitter x:Name="gridSplitter1" HorizontalAlignment="Left" Height="10" Margin="4,387.308,0,0" VerticalAlignment="Top" Width="621" RenderTransformOrigin="0.5,0.5" Grid.Row="1">
+                <GridSplitter.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleY="-1"/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </GridSplitter.RenderTransform>
+            </GridSplitter>
+            <GridSplitter x:Name="gridSplitter2" HorizontalAlignment="Left" Height="14" Margin="296,720.308,0,0" VerticalAlignment="Top" Width="328" RenderTransformOrigin="0.5,0.5" Grid.Row="1">
+                <GridSplitter.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleY="-1"/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </GridSplitter.RenderTransform>
+            </GridSplitter>
+            <GridSplitter x:Name="gridSplitter3" HorizontalAlignment="Left" Height="496" Margin="293,397.308,0,0" VerticalAlignment="Top" Width="13" RenderTransformOrigin="0.5,0.5" Grid.Row="1">
+                <GridSplitter.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="-1"/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </GridSplitter.RenderTransform>
+            </GridSplitter>
+            <Label x:Name="samplesReceivedLabel" Content="Samples Received" HorizontalAlignment="Left" Margin="305,734.308,0,0" VerticalAlignment="Top" BorderThickness="0" FontFamily="Calibri Light" FontSize="18" Height="32" Width="139" Grid.Row="1"/>
+            <TextBox x:Name="dataReceivedCounter" HorizontalAlignment="Left" Height="29" Margin="494,737.308,0,0" BorderThickness="1" TextWrapping="Wrap" Width="102" RenderTransformOrigin="0.446,0.621" TextAlignment="Center" Text="0" IsReadOnly="True" VerticalAlignment="Top" TextOptions.TextHintingMode="Animated" FontFamily="Calibri" FontSize="16" Grid.Row="1"/>
+            <Label x:Name="samplesReceivedLabel_Copy" Content="Signal to Noise Ratio" HorizontalAlignment="Left" Margin="305,791.308,0,0" VerticalAlignment="Top" BorderThickness="0" FontFamily="Calibri Light" FontSize="18" Height="32" Width="157" Grid.Row="1"/>
+            <TextBox x:Name="snrBox" HorizontalAlignment="Left" Height="29" Margin="494,794.308,0,0" TextWrapping="Wrap" Width="102" RenderTransformOrigin="0.446,0.621" TextAlignment="Center" Text="0" IsReadOnly="True" VerticalAlignment="Top" TextOptions.TextHintingMode="Animated" FontFamily="Calibri" FontSize="16" Grid.Row="1"/>
+            <TextBox x:Name="rssiBox" HorizontalAlignment="Left" Height="29" Margin="494,848.308,0,0" TextWrapping="Wrap" Width="102" RenderTransformOrigin="0.446,0.621" TextAlignment="Center" Text="0" IsReadOnly="True" VerticalAlignment="Top" TextOptions.TextHintingMode="Animated" FontFamily="Calibri" FontSize="16" Grid.Row="1"/>
+            <Label x:Name="samplesReceivedLabel_Copy1" Content="RSSI" HorizontalAlignment="Left" Margin="305,842.308,0,0" VerticalAlignment="Top" BorderThickness="0" FontFamily="Calibri Light" FontSize="18" Height="32" Width="40" Grid.Row="1"/>
+            <GridSplitter x:Name="gridSplitter4" HorizontalAlignment="Stretch" Height="8" Margin="619,622.308,0,0" VerticalAlignment="Top" Grid.Row="1"/>
+            <Label x:Name="dataNoDataLabel" Content="NO DATA" HorizontalContentAlignment ="Center" HorizontalAlignment="Left" Margin="0,593.308,0,0" VerticalAlignment="Top" FontSize="20" Foreground="Red" FontWeight="Bold" Height="37" Width="286" Grid.Row="1"/>
+            <Label x:Name="label1" Content="Longitude" HorizontalAlignment="Left" Margin="631,649.308,0,0" VerticalAlignment="Top" Height="46" Width="120" FontSize="17.333" Grid.Row="1"/>
+            <TextBox x:Name="longSent" HorizontalAlignment="Left" Height="30" Margin="756,649.308,0,0" TextWrapping="Wrap" Text="0.000" VerticalAlignment="Top" Width="195" FontSize="18.667" TextAlignment="Center" Grid.Row="1"/>
+            <Label x:Name="label1_Copy" Content="Latitude" HorizontalAlignment="Left" Margin="631,708.308,0,0" VerticalAlignment="Top" Height="46" Width="120" FontSize="17.333" Grid.Row="1"/>
+            <TextBox x:Name="latSent" HorizontalAlignment="Left" Height="29" Margin="756,710.308,0,0" TextWrapping="Wrap" Text="0.000" VerticalAlignment="Top" Width="195" FontSize="18.667" TextAlignment="Center" Grid.Row="1"/>
+            <Button x:Name="sendCoordinates" Content="Set Coordinates" HorizontalAlignment="Left" Margin="636,754.308,0,0" VerticalAlignment="Top" Width="310" Height="57" FontSize="18.667" FontWeight="Bold" Click="sendCoordinates_Click" Grid.Row="1" />
+            <Button x:Name="returnToHome" Content="Return to Home" HorizontalAlignment="Left" Margin="636,829.308,0,0" VerticalAlignment="Top" Width="310" Height="57" FontSize="18.667" FontWeight="Bold" Click="returnToHome_Click" Grid.Row="1"/>
+            <GridSplitter x:Name="gridSplitter4_Copy" HorizontalAlignment="Stretch" Height="274" Margin="958,622.308,553,0" VerticalAlignment="Top" Grid.Row="1"/>
+            <TextBox x:Name="qfeInput" HorizontalAlignment="Left" Height="46" Margin="981,653.308,0,0" TextWrapping="Wrap" Text="0.000" VerticalAlignment="Top" Width="147" FontSize="18.667" TextAlignment="Center" Grid.Row="1"/>
+            <Label x:Name="label1_Copy1" Content="mBars" HorizontalAlignment="Left" Margin="1133,651.308,0,0" VerticalAlignment="Top" Height="46" Width="66" FontSize="17.333" Grid.Row="1"/>
+            <Button x:Name="setQFE" Content="Set QFE" HorizontalAlignment="Left" Margin="1204,646.308,0,0" VerticalAlignment="Top" Width="96" Height="57" FontSize="18.667" FontWeight="Bold" Click="setQFE_Click" Grid.Row="1"/>
+            <Button x:Name="setQFECurrent" Content="Set QFE as current" HorizontalAlignment="Left" Margin="1320,646.308,0,0" VerticalAlignment="Top" Width="170" Height="57" FontSize="18.667" FontWeight="Bold" Click="setQFECurrent_Click" Grid.Row="1"/>
+            <GridSplitter x:Name="gridSplitter4_Copy1" HorizontalAlignment="Stretch" Height="14" Margin="971,725.308,0,0" VerticalAlignment="Top" Grid.Row="1"/>
+            <Button x:Name="servoArm" Margin="981,754.308,290,10" Click="servoArm_Click" Grid.Row="1">
+                <TextBlock x:Name="t1" TextWrapping="Wrap" Text="Arm Parachute Release Mechanism" FontSize="18.667" TextAlignment="Center" FontWeight="Bold"/>
+            </Button>
+            <Button x:Name="releaseServo" Margin="1281,754.308,2,10" Click="releaseServo_Click" Grid.Row="1">
+                <TextBlock x:Name ="t2" TextWrapping="Wrap" Text="Release Parachute" FontSize="18.667" TextAlignment="Center" FontWeight="Bold"/>
+            </Button>
+            <GridSplitter x:Name="gridSplitter5" HorizontalAlignment="Left" Height="16" Margin="626,324.308,0,0" VerticalAlignment="Top" Width="898" Grid.Row="1"/>
+            <Label x:Name="label2" Content="Internal Temperature / °C" HorizontalAlignment="Left" Margin="651,14.308,0,0" VerticalAlignment="Top" Height="26" Width="144" Grid.Row="1"/>
+            <Label x:Name="label2_Copy" Content="Barometric Pressure / mBar (hPa)" HorizontalAlignment="Left" Margin="651,56.308,0,0" VerticalAlignment="Top" Height="26" Width="184" Grid.Row="1"/>
+            <Label x:Name="label2_Copy1" Content="External Temperature / °C" HorizontalAlignment="Left" Margin="651,97.308,0,0" VerticalAlignment="Top" Height="26" Width="146" Grid.Row="1"/>
+            <Label x:Name="label2_Copy2" Content="Relative Humidity / %" HorizontalAlignment="Left" Margin="651,139.308,0,0" VerticalAlignment="Top" Height="26" Width="123" Grid.Row="1"/>
+            <Label x:Name="label2_Copy3" Content="Dew Point / °C" HorizontalAlignment="Left" Margin="651,222.308,0,0" VerticalAlignment="Top" Height="26" Width="86" Grid.Row="1"/>
+            <Label x:Name="label2_Copy4" Content="Relative Agricultural Potential / Arbitrary Units" HorizontalAlignment="Left" Margin="651,265.308,0,0" VerticalAlignment="Top" Height="26" Width="253" Grid.Row="1"/>
+            <Label x:Name="label2_Copy5" Content="Altitude / m" HorizontalAlignment="Left" Margin="651,181.308,0,0" VerticalAlignment="Top" Height="26" Width="74" Grid.Row="1"/>
+            <lvc:LineChart Series="{Binding Series}" Hoverable="True" Margin="1003,411,283,279" Grid.Row="1">
+                <lvc:LineChart.AxisX>
+                    <lvc:Axis LabelFormatter="{Binding XFormatter}" Separator="{x:Static lvc:DefaultAxes.CleanSeparator}"/>
+                </lvc:LineChart.AxisX>
+                <lvc:LineChart.AxisY>
+                    <lvc:Axis LabelFormatter="{Binding YFormatter}"></lvc:Axis>
+                </lvc:LineChart.AxisY>
+            </lvc:LineChart>
+            <lvc:LineChart Series="{Binding Series2}" Hoverable="True" Margin="1246,411,10,279" Grid.Row="1">
+                <lvc:LineChart.AxisX>
+                    <lvc:Axis LabelFormatter="{Binding XFormatter2}" Separator="{x:Static lvc:DefaultAxes.CleanSeparator}"/>
+                </lvc:LineChart.AxisX>
+                <lvc:LineChart.AxisY>
+                    <lvc:Axis LabelFormatter="{Binding YFormatter2}"></lvc:Axis>
+                </lvc:LineChart.AxisY>
+            </lvc:LineChart>
+            <GridSplitter x:Name="gridSplitter6" HorizontalAlignment="Left" Height="304" Margin="985,324.308,0,0" VerticalAlignment="Top" Width="12" RenderTransformOrigin="0.5,0.5" Grid.Row="1">
+                <GridSplitter.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="-1"/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </GridSplitter.RenderTransform>
+            </GridSplitter>
+            <TextBox x:Name="rapBox" HorizontalAlignment="Left" Height="26" Margin="928,265.308,0,0" TextWrapping="Wrap" Text="0.000" VerticalAlignment="Top" Width="108" FontSize="13.333" IsReadOnlyCaretVisible="True" IsReadOnly="True" Grid.Row="1"/>
+            <TextBox x:Name="dewPointBox" HorizontalAlignment="Left" Height="26" Margin="928,222.308,0,0" TextWrapping="Wrap" Text="0.000" VerticalAlignment="Top" Width="108" FontSize="13.333" IsReadOnlyCaretVisible="True" IsReadOnly="True" Grid.Row="1"/>
+            <TextBox x:Name="altitudeBox" HorizontalAlignment="Left" Height="26" Margin="928,181.308,0,0" TextWrapping="Wrap" Text="0.000" VerticalAlignment="Top" Width="108" FontSize="13.333" IsReadOnlyCaretVisible="True" IsReadOnly="True" Grid.Row="1"/>
+            <TextBox x:Name="humidityBox" HorizontalAlignment="Left" Height="26" Margin="928,139.308,0,0" TextWrapping="Wrap" Text="0.000" VerticalAlignment="Top" Width="108" FontSize="13.333" IsReadOnlyCaretVisible="True" IsReadOnly="True" Grid.Row="1"/>
+            <TextBox x:Name="externalTempBox" HorizontalAlignment="Left" Height="26" Margin="928,98.308,0,0" TextWrapping="Wrap" Text="0.000" VerticalAlignment="Top" Width="108" FontSize="13.333" IsReadOnlyCaretVisible="True" IsReadOnly="True" Grid.Row="1"/>
+            <TextBox x:Name="pressureBox" HorizontalAlignment="Left" Height="26" Margin="928,57.308,0,0" TextWrapping="Wrap" Text="0.000" VerticalAlignment="Top" Width="108" FontSize="13.333" IsReadOnlyCaretVisible="True" IsReadOnly="True" Grid.Row="1"/>
+            <TextBox x:Name="internalTempBox" HorizontalAlignment="Left" Height="26" Margin="928,14.308,0,0" TextWrapping="Wrap" Text="0.000" VerticalAlignment="Top" Width="108" FontSize="13.333" IsReadOnly="True" Grid.Row="1"/>
+            <Grid Margin="1096,40.308,10,818" Grid.Row="1">
+                <Rectangle Fill="#FFFFFF" HorizontalAlignment="Left" Height="38" Stroke="Black" VerticalAlignment="Top" Width="418" RenderTransformOrigin="0.5,0.5">
+                    <Rectangle.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleY="-1"/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Label x:Name="label2_Copy7" Content="Latitude / °N" HorizontalAlignment="Left" Margin="2,6,0,0" VerticalAlignment="Top" Height="26" Width="78"/>
+                <TextBox x:Name="latBox" HorizontalAlignment="Left" Height="26" Margin="296,6,0,0" TextWrapping="Wrap" Text="0.000000" VerticalAlignment="Top" Width="108" FontSize="13.333" IsReadOnly="True"/>
+            </Grid>
+            <Grid Margin="1096,114.308,10,744" Grid.Row="1">
+                <Rectangle Fill="#FFFFFF" HorizontalAlignment="Left" Height="38" Stroke="Black" VerticalAlignment="Top" Width="418" RenderTransformOrigin="0.5,0.5" Margin="0,-1,0,0">
+                    <Rectangle.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleY="-1"/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Label x:Name="label2_Copy9" Content="Altitude / m" HorizontalAlignment="Left" Margin="2,4,0,0" VerticalAlignment="Top" Height="26" Width="74"/>
+                <TextBox x:Name="altitudeGPSBox" HorizontalAlignment="Left" Height="26" Margin="296,6,0,0" TextWrapping="Wrap" Text="0.000" VerticalAlignment="Top" Width="108" FontSize="13.333" IsReadOnly="True"/>
+            </Grid>
+            <Grid Margin="1096,152.308,10,706" Grid.Row="1">
+                <Rectangle Fill="#FFFFFF" HorizontalAlignment="Left" Height="38" Stroke="Black" VerticalAlignment="Top" Width="418" RenderTransformOrigin="0.5,0.5" Margin="0,-2,0,0">
+                    <Rectangle.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleY="-1"/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Label x:Name="label2_Copy10" Content="Heading / °" HorizontalAlignment="Left" Margin="2,5,0,0" VerticalAlignment="Top" Height="26" Width="70"/>
+                <TextBox x:Name="headingBox" HorizontalAlignment="Left" Height="26" Margin="296,5,0,0" TextWrapping="Wrap" Text="0.000" VerticalAlignment="Top" Width="108" FontSize="13.333" IsReadOnly="True"/>
+            </Grid>
+            <Grid Margin="1096,189.308,10,669" Grid.Row="1">
+                <Rectangle Fill="#FFFFFF" HorizontalAlignment="Left" Height="38" Stroke="Black" VerticalAlignment="Top" Width="418" RenderTransformOrigin="0.5,0.5" Margin="0,-2,0,0">
+                    <Rectangle.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleY="-1"/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Label x:Name="label2_Copy11" Content="Pitch / °" HorizontalAlignment="Left" Margin="2,5,0,0" VerticalAlignment="Top" Height="26" Width="70"/>
+                <TextBox x:Name="pitchBox" HorizontalAlignment="Left" Height="26" Margin="296,5,0,0" TextWrapping="Wrap" Text="0.000" VerticalAlignment="Top" Width="108" FontSize="13.333" IsReadOnly="True"/>
+            </Grid>
+            <Grid Margin="1096,226.308,10,632" Grid.Row="1">
+                <Rectangle Fill="#FFFFFF" HorizontalAlignment="Left" Height="38" Stroke="Black" VerticalAlignment="Top" Width="418" RenderTransformOrigin="0.5,0.5" Margin="0,-3,0,0">
+                    <Rectangle.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleY="-1"/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Label x:Name="label2_Copy12" Content="Roll / °" HorizontalAlignment="Left" Margin="2,4,0,0" VerticalAlignment="Top" Height="26" Width="45"/>
+                <TextBox x:Name="rollBox" HorizontalAlignment="Left" Height="26" Margin="296,5,0,0" TextWrapping="Wrap" Text="0.000" VerticalAlignment="Top" Width="108" FontSize="13.333" IsReadOnly="True"/>
+            </Grid>
+            <Grid Margin="1096,264.308,10,597" Grid.Row="1">
+                <Rectangle Fill="#FFFFFF" HorizontalAlignment="Left" Height="38" Stroke="Black" VerticalAlignment="Top" Width="418" RenderTransformOrigin="0.5,0.5" Margin="0,-4,0,0">
+                    <Rectangle.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleY="-1"/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Rectangle.RenderTransform>
+                </Rectangle>
+                <Label x:Name="label2_Copy13" Content="Time / hours : minutes : seconds" HorizontalAlignment="Left" Margin="2,4,0,0" VerticalAlignment="Top" Height="26" Width="181"/>
+                <TextBox x:Name="timeBox" HorizontalAlignment="Left" Height="26" Margin="296,4,0,0" TextWrapping="Wrap" Text="00:00:00" VerticalAlignment="Top" Width="108" FontSize="13.333" IsReadOnly="True"/>
+            </Grid>
+            <Label x:Name="label2_Copy14" Content="Ground Temperature:" HorizontalAlignment="Left" Margin="1003,345.308,0,0" VerticalAlignment="Top" Height="26" Width="125" Grid.Row="1"/>
+            <TextBox x:Name="groundTempBox" HorizontalAlignment="Left" Height="26" Margin="1133,347.308,0,0" TextWrapping="Wrap" Text="0.000" VerticalAlignment="Top" Width="108" FontSize="13.333" IsReadOnlyCaretVisible="True" IsReadOnly="True" Grid.Row="1"/>
+            <Label x:Name="label2_Copy15" Content="Ground Air Pressure:" HorizontalAlignment="Left" Margin="1275,345.308,0,0" VerticalAlignment="Top" Height="26" Width="131" Grid.Row="1"/>
+            <GridSplitter x:Name="gridSplitter5_Copy" HorizontalAlignment="Left" Height="16" Margin="991,390.308,0,0" VerticalAlignment="Top" Width="533" Grid.Row="1"/>
+            <ComboBox x:Name="serialPortSelectionBox" HorizontalAlignment="Left" Margin="10,397.308,0,0" VerticalAlignment="Top" Width="128" Height="47" Grid.Row="1"/>
+            <Button x:Name="connectSerialButton" Content="Connect" HorizontalAlignment="Left" Margin="10,449.308,0,0" VerticalAlignment="Top" Width="259" Height="57" FontSize="18.667" FontWeight="Bold" Click="connectSerialButton_Click" Grid.Row="1"/>
+            <Button x:Name="disconnectSerialButton" Content="Disconnect" HorizontalAlignment="Left" Margin="10,511.308,0,0" VerticalAlignment="Top" Width="259" Height="57" FontSize="18.667" FontWeight="Bold" Click="disconnectSerialButton_Click" Grid.Row="1"/>
+            <GridSplitter x:Name="gridSplitter3_Copy" HorizontalAlignment="Left" Height="12" Margin="1,573.308,0,0" VerticalAlignment="Top" Width="299" RenderTransformOrigin="0.5,0.5" Grid.Row="1">
+                <GridSplitter.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="-1"/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </GridSplitter.RenderTransform>
+            </GridSplitter>
+            <TextBox x:Name="groundPressure" HorizontalAlignment="Left" Height="26" Margin="1406,347.308,0,0" TextWrapping="Wrap" Text="0.000" VerticalAlignment="Top" Width="108" FontSize="13.333" IsReadOnlyCaretVisible="True" IsReadOnly="True" Grid.Row="1"/>
+            <ComboBox x:Name="serialPortBaudRate" HorizontalAlignment="Left" Margin="143,397.308,0,0" VerticalAlignment="Top" Width="126" Height="47" Grid.Row="1"/>
+            <cam:Webcam Name="WebcamCtrl" Margin="10,6,908,597" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1"/>
+
+            <StackPanel Margin="0,327,1236,0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Top" Grid.Row="1">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="22"/>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Height="23" Margin="0,10,0,0"/>
+            </StackPanel>
+
+            <Grid Margin="303,0,908,507" HorizontalAlignment="Center" VerticalAlignment="Bottom" Height="154" Width="313" RenderTransformOrigin="0.5,0.667" Grid.Row="1">
+                <Button Content="Start Recording" Height="30" Width="162" Margin="0,98,0,0" HorizontalAlignment="Left" 
+                    VerticalAlignment="Top" x:Name="StartRecordingButton" Click="StartRecordingButton_Click"/>
+                <Button Content="Stop Recording" Height="30" Width="151" Margin="0,98,0,0" HorizontalAlignment="Right" 
+                    VerticalAlignment="Top" x:Name="StopRecordingButton" Click="StopRecordingButton_Click"/>
+                <Button Content="Stop Capture" Height="27" Width="151" HorizontalAlignment="Right" 
+                    VerticalAlignment="Top" x:Name="StopCaptureButton" Click="StopCaptureButton_Click" Margin="0,71,0,0"/>
+                <Button Content="Start Capture" Height="27" Width="162" HorizontalAlignment="Left" 
+                    VerticalAlignment="Top" x:Name="StartCaptureButton" Click="StartCaptureButton_Click" Margin="0,71,0,0"/>
+                <Button Content="Take Snapshot" Height="26" Width="313" Margin="0,128,0,0" HorizontalAlignment="Center" 
+                    VerticalAlignment="Top" x:Name="TakeSnapshotButton" Click="TakeSnapshotButton_Click"/>
+            </Grid>
+            <TextBox x:Name="SerialOutputs" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" HorizontalAlignment="Left" Height="240" Margin="10,646.308,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="259" Grid.Row="1"/>
+            <ComboBox Height="22" Width="200" HorizontalAlignment="Left" VerticalAlignment="Top"
+            	x:Name="VideoDevicesComboBox" Margin="88,305,0,0" Grid.Row="1"/>
+            <TextBlock Height="22" Width="78" HorizontalAlignment="Left" VerticalAlignment="Top"
+            	Text="Video Device" TextAlignment="Left" FlowDirection="LeftToRight" Margin="10,307,0,0" Grid.Row="1" />
+            <TextBlock Height="22" Width="78" HorizontalAlignment="Left" VerticalAlignment="Top"
+            	Text="Audio Device" TextAlignment="Left" FlowDirection="LeftToRight" Margin="10,360,0,0" Grid.Row="1"/>
+            <ComboBox HorizontalAlignment="Left" Height="23" Width="200" VerticalAlignment="Bottom"
+            	x:Name="AudioDevicesComboBox" Margin="88,0,0,514" Grid.Row="1" />
+
+
+        </Grid>
+    </Viewbox>
+</Window>
