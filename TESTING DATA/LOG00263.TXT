@@ -1,0 +1,480 @@
+Sample Number = 1
+Internal Temp = 2022
+Pressure = 101140
+External Temp = 2772
+Humidity = 839
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 0
+Heading = 154.31
+Pitch = 0.32
+Roll = 3.04
+
+
+
+
+
+Sample Number = 2
+Internal Temp = 2026
+Pressure = 101139
+External Temp = 2769
+Humidity = 847
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 0
+Heading = 155.75
+Pitch = 0.37
+Roll = 3.10
+
+
+
+
+
+Sample Number = 3
+Internal Temp = 2026
+Pressure = 101141
+External Temp = 2770
+Humidity = 874
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 0
+Heading = 154.84
+Pitch = 0.56
+Roll = 3.04
+
+
+
+
+
+Sample Number = 4
+Internal Temp = 2030
+Pressure = 101145
+External Temp = 2769
+Humidity = 885
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 0
+Heading = 155.60
+Pitch = 0.46
+Roll = 2.91
+
+
+
+
+
+Sample Number = 5
+Internal Temp = 2029
+Pressure = 101143
+External Temp = 2769
+Humidity = 856
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 0
+Heading = 155.42
+Pitch = 0.54
+Roll = 2.94
+
+
+
+
+
+Sample Number = 6
+Internal Temp = 2031
+Pressure = 101142
+External Temp = 2768
+Humidity = 863
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 1
+Heading = 155.45
+Pitch = 0.59
+Roll = 3.07
+
+
+
+
+
+Sample Number = 7
+Internal Temp = 2030
+Pressure = 101144
+External Temp = 2769
+Humidity = 883
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 1
+Heading = 154.61
+Pitch = 0.42
+Roll = 2.90
+
+
+
+
+
+Sample Number = 8
+Internal Temp = 2031
+Pressure = 101135
+External Temp = 2769
+Humidity = 919
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 1
+Heading = 154.44
+Pitch = 0.14
+Roll = 3.12
+
+
+
+
+
+Sample Number = 9
+Internal Temp = 2030
+Pressure = 101145
+External Temp = 2769
+Humidity = 930
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 0
+Heading = 155.03
+Pitch = 0.48
+Roll = 3.13
+
+
+
+
+
+Sample Number = 10
+Internal Temp = 2032
+Pressure = 101142
+External Temp = 2769
+Humidity = 873
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 1
+Heading = 155.22
+Pitch = 0.33
+Roll = 3.12
+
+
+
+
+
+Sample Number = 11
+Internal Temp = 2030
+Pressure = 101144
+External Temp = 2768
+Humidity = 842
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 1
+Heading = 155.08
+Pitch = 0.18
+Roll = 2.89
+
+
+
+
+
+Sample Number = 12
+Internal Temp = 2030
+Pressure = 101138
+External Temp = 2768
+Humidity = 855
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 1
+Heading = 154.07
+Pitch = 0.72
+Roll = 2.19
+
+
+
+
+
+Sample Number = 13
+Internal Temp = 2029
+Pressure = 101137
+External Temp = 2765
+Humidity = 825
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 1
+Heading = 152.84
+Pitch = 0.28
+Roll = 3.16
+
+
+
+
+
+Sample Number = 14
+Internal Temp = 2032
+Pressure = 101136
+External Temp = 2764
+Humidity = 851
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 0
+Heading = 154.27
+Pitch = 0.38
+Roll = 2.91
+
+
+
+
+
+Sample Number = 15
+Internal Temp = 2032
+Pressure = 101138
+External Temp = 2761
+Humidity = 832
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 1
+Heading = 154.63
+Pitch = 0.56
+Roll = 2.97
+
+
+
+
+
+Sample Number = 16
+Internal Temp = 2037
+Pressure = 101140
+External Temp = 2761
+Humidity = 858
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 0
+Heading = 155.13
+Pitch = 0.35
+Roll = 3.36
+
+
+
+
+
+Sample Number = 17
+Internal Temp = 2036
+Pressure = 101142
+External Temp = 2761
+Humidity = 877
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 0
+Heading = 155.17
+Pitch = 0.37
+Roll = 3.00
+
+
+
+
+
+Sample Number = 18
+Internal Temp = 2037
+Pressure = 101145
+External Temp = 2762
+Humidity = 904
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 1
+Heading = 155.73
+Pitch = 0.52
+Roll = 2.99
+
+
+
+
+
+Sample Number = 19
+Internal Temp = 2034
+Pressure = 101143
+External Temp = 2762
+Humidity = 928
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 1
+Heading = 155.00
+Pitch = 0.50
+Roll = 3.09
+
+
+
+
+
+Sample Number = 20
+Internal Temp = 2035
+Pressure = 101139
+External Temp = 2761
+Humidity = 874
+Second = 0
+GPS Fix = 0
+Longitude = 0.00
+Latitude = 0.00
+Altitude = 0.00
+Acceleration in x = 0
+Acceleration in y = 0
+Acceleration in z = 1
+Rotation in x = 0
+Rotation in y = 2
+Rotation in z = 1
+Heading = 155.33
+Pitch = 0.32
+Roll = 2.95
+
+
+
+
+

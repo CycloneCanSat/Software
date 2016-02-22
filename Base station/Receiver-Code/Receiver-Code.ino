@@ -1,9 +1,14 @@
 #include <SPI.h>
-
+#include <Wire.h>
+#include <TinyGPS++.h>
 #include <RFM98W_library.h>
 RFMLib radio =RFMLib(20,7,16,21);
 #define nss 20
+#define gpsSerial Serial1
+TinyGPSPlus gps;
+
 void setup(){
+  gpsSerial.begin(4800);
   SPI.begin();
   Serial.begin(38400);
   byte my_config[6] = {0x44,0x84,0x88,0xAC,0xCD, 0x08};
@@ -11,6 +16,10 @@ void setup(){
 }
 
 void loop(){
+  if(gpsSerial.available() > 0)
+  {
+    gps.encode(gpsSerial.read());
+  }
   if(radio.rfm_status == 0){
     radio.beginRX(); 
     attachInterrupt(7,RFMISR,RISING);

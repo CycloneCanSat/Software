@@ -145,7 +145,7 @@ float magz;
 float roll;
 float pitch;
 float heading;
-int sampleNumber = 0;
+int sampleNumber;
 
 void assemblePacket (RFMLib:: Packet &pkt);
 void decodePacket (RFMLib:: Packet pkt);
@@ -162,7 +162,7 @@ void setup() {
   Serial.begin(Computer_BaudRate);
   gpsSerial.begin(GPS_BaudRate);
   openLog.begin(OpenLogBaudRate);
-  openLog.println("SAMPLE NUMBER, INTERNAL TEMPERATURE, PRESSURE, EXTERNAL TEMPERATURE, HUMIDITY, TIME(HOURS), TIME(MINUTES), TIME(SECONDS), GPS FIX (SATS), LONGITUDE, LATITUDE, ALTITUDE, ACCELERATION IN X, ACCELERATION IN Y, ACCELERATION IN Z, ROTATION IN X, ROTATION IN Y, ROTATION IN Z, MAGNETIC FIELD STRENGTH IN X, MAGNETIC FIELD STRENGTH IN Y, MAGNETIC FIELD STRENGTH IN Z, HEADING, PITCH, ROLL"); 
+  openLog.println("SAMPLE NUMBER, INTERNAL TEMPERATURE, PRESSURE, EXTERNAL TEMPERATURE, HUMIDITY, TIME(HOURS), TIME(MINUTES), TIME(SECONDS), GPS FIX (SATS), LONGITUDE, LATITUDE, ALTITUDE, ACCELERATION IN X, ACCELERATION IN Y, ACCELERATION IN Z, ROTATION IN X, ROTATION IN Y, ROTATION IN Z, MAGNETIC FIELD STRENGTH IN X, MAGNETIC FIELD STRENGTH IN Y, MAGNETIC FIELD STRENGTH IN Z, HEADING, PITCH, ROLL, AGRICULTURAL VIABILITY, ALTITUDE (USING PRESSURE SENSOR), DEW POINT"); 
   SPI.begin();
   byte my_config[6] = {0x44,0x84,0x88,0xAC,0xCD, 0x08};
   radio.configure(my_config);//Radio configuration
@@ -175,7 +175,7 @@ void setup() {
 #if verbosity != 0
   Serial.print("Cyclone CanSat Firmware Version Number: ");
   Serial.print(SoftwareVersionNumber);
-  Serial.print(" (Cassini). Verbosity is equal to ");
+  Serial.print(" (Discovery) Verbosity is equal to ");
   Serial.println(verbosity);
 #endif
   if (imu.begin())
@@ -184,6 +184,7 @@ void setup() {
           Serial.println("9DOF Initialised");
       #endif
   }
+  sampleNumber = 0;
 }
 
 void loop() {
@@ -279,6 +280,16 @@ void decodePacket(RFMLib::Packet pkt)
 }
 void printToOpenLog()
 {
+  float gamma = log(sns.humidity/100.0) + ((17.67 * sns.external_temperature)/(243.5 + sns.external_temperature));
+    float dewPoint = ((243.5 * gamma)/(17.67 - gamma));
+    // float dewPoint = (((log((sns.humidity)/100)) + ((17.62 * sns.external_temperature)/(243.12+sns.external_temperature)))/(17.62 - (log((sns.humidity)/(100)) + ((17.62*sns.external_temperature)/(243.12+sns.external_temperature)))));
+    float epress = sns.pressure / 1013.2501;
+    float tempViability = 1-(pow((sns.external_temperature-27),2))/(972);
+    float presViability = (-(pow(epress, 2))+(3*epress)-1)/epress;
+    float humViability = -1*pow((sns.humidity/100),2)+((2*sns.humidity)/100);
+    float agriViability = tempViability * presViability * humViability;
+    float h = ((sns.external_temperature+273)/(-0.0065)) * (pow((sns.pressure/qfe),((-8.31432 * -0.0065)/(9.80665*0.0289644)))-1);
+
   openLog.print(sampleNumber);
   openLog.print(",");
   openLog.print(sns.internal_temperature);
@@ -326,7 +337,13 @@ void printToOpenLog()
   openLog.print(",");
   openLog.print(pitch);
   openLog.print(",");
-  openLog.println(roll);
+  openLog.print(roll);
+  openLog.print(",");
+  openLog.print(agriViability);
+  openLog.print(",");
+  openLog.print(h);
+  openLog.print(",");
+  openLog.println(dewPoint);
 }
 void assemblePacket(RFMLib::Packet &pkt)
 {
@@ -350,7 +367,9 @@ void assemblePacket(RFMLib::Packet &pkt)
   int time2 = gps.time.hour() * 3600 + gps.time.minute() * 60 + gps.time.second();
   pkt.data[10] = (byte)(time2 >> 8);
   pkt.data[11] = time2 & 255;
-  pkt.data[12] = (byte)gps.satellites.value();
+  float rawGPSSats = gps.satellites.value(); // I really don't know why I get number of connected satellites as a float!!
+  int transmittableGPSSats = (int)rawGPSSats;
+  pkt.data[12] = (byte)transmittableGPSSats;
   float rawlongitude = gps.location.lng();
   rawlongitude = rawlongitude * 1000000000;
   int longitudeToSend = (int)rawlongitude;
