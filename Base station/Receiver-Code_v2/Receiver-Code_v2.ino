@@ -22,7 +22,7 @@ void setup(){
   sns.initialise();//initialise the sensors connected over I2C
   SPI.begin();
   Serial.begin(115200);
-  byte my_config[6] = {0x44,0x84,0x88,0xAC,0xCD, 0x08};
+  byte my_config[6] = {0x62,0x74,0x88,0x84,0x7B, 0x08};
   radio.configure(my_config);
   delay(5000);
   Serial.println("Signal to Noise Ratio, Received Signal Strength Indication, Sample Number, Internal Temperature, Barometric Pressure, External Temperature, Humidity, Time, GPS Fix (No of Satellites), Longitude, Latitude, Altitude, Heading, Pitch, Roll, Agricultural Viability, Pressure (Atms), Altitude from Pressure Sensor, Dew Point, Ground Barometric Pressure, Ground Temperature");

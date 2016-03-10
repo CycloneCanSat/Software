@@ -1,0 +1,43 @@
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\Halley (Version 1).exe.config
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\Halley (Version 1).exe
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\Halley (Version 1).pdb
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\AForge.Controls.dll
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\AForge.dll
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\AForge.Imaging.dll
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\AForge.Math.dll
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\AForge.Video.DirectShow.dll
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\AForge.Video.dll
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\EncoderCore.dll
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\LiveCharts.dll
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\Microsoft.Expression.Encoder.Api2.dll
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\Microsoft.Expression.Encoder.dll
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\Microsoft.Expression.Encoder.Types.dll
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\Microsoft.Expression.Encoder.Utilities.dll
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\Microsoft.Maps.MapControl.WPF.dll
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\WebcamControl.dll
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\Microsoft.Expression.Licensing.dll
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\Microsoft.Expression.Framework.dll
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\Microsoft.Expression.Extensibility.dll
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\AForge.xml
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\AForge.Controls.xml
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\AForge.Imaging.xml
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\AForge.Math.xml
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\AForge.Video.xml
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\AForge.Video.DirectShow.xml
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\Microsoft.Expression.Encoder.xml
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\Microsoft.Expression.Encoder.Api2.xml
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\Microsoft.Expression.Encoder.Types.xml
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\Microsoft.Expression.Encoder.Utilities.xml
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\Microsoft.Maps.MapControl.WPF.xml
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\bin\x86\Debug\en\Microsoft.Expression.Framework.resources.dll
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\obj\x86\Debug\MainWindow.g.cs
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\obj\x86\Debug\App.g.cs
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\obj\x86\Debug\Halley (Version 1)_MarkupCompile.cache
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\obj\x86\Debug\Halley (Version 1)_MarkupCompile.lref
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\obj\x86\Debug\MainWindow.baml
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\obj\x86\Debug\Halley (Version 1).g.resources
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\obj\x86\Debug\Halley__Version_1_.Properties.Resources.resources
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\obj\x86\Debug\Halley (Version 1).csproj.GenerateResource.Cache
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\obj\x86\Debug\Halley (Version 1).exe
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\obj\x86\Debug\Halley (Version 1).pdb
+C:\Users\ahuja\documents\visual studio 2015\Projects\Halley (Version 1)\Halley (Version 1)\obj\x86\Debug\Halley (Version 1).csprojResolveAssemblyReference.cache

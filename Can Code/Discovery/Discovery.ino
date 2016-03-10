@@ -96,8 +96,9 @@ bool latitudePositive = false;
 bool longitudePositive = true;
 
 //Time between transmissions
-#define timeBetweenTransmissions 250
-#define sensorReadingPeriod 250
+#define timeBetweenTransmissions 150
+#define sensorReadingPeriod 150
+#define imuReadingPeriod 2000
 
 
 //Various other info
@@ -126,6 +127,7 @@ LSM9DS1 imu; // LSM9DS1 Object
 Servo ParaRelease; // Parachute Release Servo Object
 uint32_t radioTransmitTimer;
 uint32_t sensorReadTimer;
+uint32_t imuReadTimer;
 boolean pkt_rx = false;
 boolean msRead = false;
 boolean readSens = false;
@@ -164,7 +166,7 @@ void setup() {
   openLog.begin(OpenLogBaudRate);
   openLog.println("SAMPLE NUMBER, INTERNAL TEMPERATURE, PRESSURE, EXTERNAL TEMPERATURE, HUMIDITY, TIME(HOURS), TIME(MINUTES), TIME(SECONDS), GPS FIX (SATS), LONGITUDE, LATITUDE, ALTITUDE, ACCELERATION IN X, ACCELERATION IN Y, ACCELERATION IN Z, ROTATION IN X, ROTATION IN Y, ROTATION IN Z, MAGNETIC FIELD STRENGTH IN X, MAGNETIC FIELD STRENGTH IN Y, MAGNETIC FIELD STRENGTH IN Z, HEADING, PITCH, ROLL, AGRICULTURAL VIABILITY, ALTITUDE (USING PRESSURE SENSOR), DEW POINT"); 
   SPI.begin();
-  byte my_config[6] = {0x44,0x84,0x88,0xAC,0xCD, 0x08};
+  byte my_config[6] = {0x62,0x74,0x88,0x84,0x7B, 0x08};
   radio.configure(my_config);//Radio configuration
   Wire.begin();//join the I2C bus
   sns.initialise();//initialise the sensors connected over I2C
@@ -172,6 +174,8 @@ void setup() {
   imu.settings.device.mAddress = LSM9DS1_M;
   imu.settings.device.agAddress = LSM9DS1_AG;
   radioTransmitTimer = millis();
+  sensorReadTimer = millis();
+  imuReadTimer = millis();
 #if verbosity != 0
   Serial.print("Cyclone CanSat Firmware Version Number: ");
   Serial.print(SoftwareVersionNumber);
@@ -188,8 +192,9 @@ void setup() {
 }
 
 void loop() {
-  // READ FROM IMU
-  readIMU();
+  
+
+    readIMU();
   if (millis() - sensorReadTimer >= sensorReadingPeriod)
     readSens = true;
   // READ FROM SENSORS
@@ -210,10 +215,12 @@ void loop() {
   }
   if (radio.rfm_done) 
     finishRFM();
+    
   while (gpsSerial.available())
     gps.encode(gpsSerial.read());
   if ((millis() - radioTransmitTimer) > timeBetweenTransmissions && radio.rfm_status != 1)
     transmission();
+    
 }
 void transmission()
 {
@@ -288,6 +295,7 @@ void printToOpenLog()
     float presViability = (-(pow(epress, 2))+(3*epress)-1)/epress;
     float humViability = -1*pow((sns.humidity/100),2)+((2*sns.humidity)/100);
     float agriViability = tempViability * presViability * humViability;
+    float qfe = 1010.0;
     float h = ((sns.external_temperature+273)/(-0.0065)) * (pow((sns.pressure/qfe),((-8.31432 * -0.0065)/(9.80665*0.0289644)))-1);
 
   openLog.print(sampleNumber);

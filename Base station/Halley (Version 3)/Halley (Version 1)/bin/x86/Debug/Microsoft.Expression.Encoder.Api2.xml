@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<doc>
+  <assembly>
+        "EncoderApi2"
+    </assembly>
+  <members>
+    <member name="M:Microsoft.Expression.Encoder.Profiles.LocalProfiles.EnumerateAudioCodecs(System.Collections.ObjectModel.ObservableCollection`1{Microsoft.Expression.Encoder.Profiles.AudioProfile})">
+      <summary>
+Enumerate the collection of audio profiles that are installed on the system.
+</summary>
+    </member>
+    <member name="P:Microsoft.Expression.Encoder.Profiles.LocalProfiles.AudioProfiles">
+      <summary>
+Gets the list of audio profiles installed on the system.
+</summary>
+    </member>
+    <member name="T:Microsoft.Expression.Encoder.Profiles.LocalProfiles">
+      <summary>
+Class to get the list of audio profiles installed on the system.
+</summary>
+    </member>
+  </members>
+</doc>
