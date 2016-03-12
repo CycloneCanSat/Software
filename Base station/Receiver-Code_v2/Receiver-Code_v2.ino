@@ -24,7 +24,6 @@ void setup(){
   Serial.begin(115200);
   byte my_config[6] = {0x62,0x74,0x88,0x84,0x7B, 0x08};
   radio.configure(my_config);
-  delay(5000);
   Serial.println("Signal to Noise Ratio, Received Signal Strength Indication, Sample Number, Internal Temperature, Barometric Pressure, External Temperature, Humidity, Time, GPS Fix (No of Satellites), Longitude, Latitude, Altitude, Heading, Pitch, Roll, Agricultural Viability, Pressure (Atms), Altitude from Pressure Sensor, Dew Point, Ground Barometric Pressure, Ground Temperature");
   qfe = 1013.25;
   readingPeriod = 500;
@@ -69,7 +68,7 @@ void loop(){
     float itemp = (float)internalTemp / 100;
     int pressure = (int)rx.data[4] * 256 + (int)rx.data[5];
     float ipress = (float)pressure / 10;
-    int externalTemp = (int)rx.data[6] * 256 + (int)rx.data[7];
+    int externalTemp = ((int)rx.data[6] * 256 + (int)rx.data[7])-1;
     float etemp = (float)externalTemp / 100;
     int humidity = (int)rx.data[8] * 256 + (int)rx.data[9];
     float ihum = (float)humidity / 100;

@@ -182,19 +182,19 @@ void setup() {
   Serial.print(" (Discovery) Verbosity is equal to ");
   Serial.println(verbosity);
 #endif
-  if (imu.begin())
+  /*if (imu.begin())
   {
       #if verbosity == 1
           Serial.println("9DOF Initialised");
       #endif
-  }
+  }*/
   sampleNumber = 0;
 }
 
 void loop() {
   
 
-    readIMU();
+    //readIMU();
   if (millis() - sensorReadTimer >= sensorReadingPeriod)
     readSens = true;
   // READ FROM SENSORS
